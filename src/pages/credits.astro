@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import { photos, type PhotoSlot } from "../content/photos";
+import { hotel } from "../content/hotel";
+
+// Only photos with a credit filled in are listed.
+const credited = Object.entries(photos as Record<string, PhotoSlot>).filter(([, slot]) => slot.credit);
+---
+
+<BaseLayout title="About the photos" description="Where the photos on this concept site come from.">
+  <PageIntro
+    eyebrow="About the photos"
+    heading="Borrowed views."
+    lede="Zmeuriș is made up, so it has no photos of its own. Every photo here is a free-licence stock photo from Unsplash or Pexels, showing other places: other houses, other rooms, other caves."
+  />
+
+  <div class="container">
+    {
+      credited.length > 0 && (
+        <ul class="credits">
+          {credited.map(([name, slot]) => (
+            <li>
+              <span class="where">{name}</span>
+              <span>
+                Photo by {slot.credit!.photographer} on <a href={slot.credit!.url}>{slot.credit!.source}</a>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <h2 class="sub">Type and code</h2>
+    <p>
+      Set in Fraunces and Instrument Sans, both under the SIL Open Font License. Designed and built by {hotel.author};
+      the <a href={hotel.repo}>source code is on GitHub</a>.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .credits {
+    margin: 0 0 var(--space-8);
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .credits li {
+    display: grid;
+    gap: 0.15rem var(--space-3);
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  @media (min-width: 40rem) {
+    .credits li {
+      grid-template-columns: 12rem 1fr;
+    }
+  }
+
+  .where {
+    color: var(--color-moss);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .sub {
+    font-size: var(--text-xl);
+  }
+</style>

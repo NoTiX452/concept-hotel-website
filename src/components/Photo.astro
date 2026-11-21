@@ -1,0 +1,112 @@
+---
+// A photo from the slot list.
+// Production build: every photo must have a file, alt text and a credit, or the build stops.
+// `astro dev`: a photo with a file but no credit shows with a "credit pending" tag,
+// and a slot without a file shows as a labelled pending box.
+import { Picture } from "astro:assets";
+import { resolvePhoto } from "../lib/photos";
+import type { PhotoName } from "../content/photos";
+
+interface Props {
+  name: PhotoName;
+  sizes: string;
+  widths?: number[];
+  class?: string;
+  eager?: boolean;
+  // Aspect ratio of the frame, for example "4 / 3". The photo is cropped to fill it.
+  ratio?: string;
+}
+
+const { name, sizes, widths = [480, 800, 1200, 1600], class: className, eager = false, ratio = "3 / 2" } = Astro.props;
+const photo = resolvePhoto(name);
+
+if (!photo.ready && import.meta.env.PROD) {
+  throw new Error(
+    `Photo "${name}" is not ready (missing: ${photo.missing.join(", ")}). Add it to src/assets/photos/ and fill in src/content/photos.ts.`,
+  );
+}
+
+const image = photo.image;
+// Never ask for a size larger than the original file.
+const usableWidths = image ? widths.filter((w) => w <= image.width) : [];
+if (image && usableWidths.length === 0) usableWidths.push(image.width);
+---
+
+<div class:list={["photo", className]} style={`--ratio: ${ratio}; --focus: ${photo.slot.focus ?? "center"}`}>
+  {
+    image ? (
+      <Picture
+        src={image}
+        formats={["avif", "webp"]}
+        widths={usableWidths}
+        sizes={sizes}
+        alt={photo.slot.alt}
+        loading={eager ? "eager" : "lazy"}
+        fetchpriority={eager ? "high" : "auto"}
+      />
+    ) : (
+      <div class="pending" role="img" aria-label={`Photo pending: ${photo.slot.subject}`}>
+        <span class="pending-tag">Photo pending · {name}</span>
+        <span class="pending-subject">{photo.slot.subject}</span>
+      </div>
+    )
+  }
+  {image && !photo.ready && <span class="pending-badge">Dev only · {photo.missing.join(", ")} pending</span>}
+</div>
+
+<style>
+  .photo {
+    position: relative;
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    background: var(--color-sand);
+  }
+
+  .photo :global(picture),
+  .photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .photo :global(img) {
+    object-fit: cover;
+    object-position: var(--focus);
+  }
+
+  /* Development only: production builds stop instead of showing these. */
+  .pending {
+    display: grid;
+    align-content: center;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1.5rem;
+    border: 2px dashed var(--color-raspberry);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+
+  .pending-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-raspberry);
+  }
+
+  .pending-subject {
+    max-width: 40ch;
+    font-size: 0.95rem;
+  }
+
+  .pending-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-raspberry);
+    color: var(--color-paper);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+</style>

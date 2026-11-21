@@ -1,0 +1,43 @@
+/*
+ * Design tokens for Zmeuriș Mountain House.
+ * Light, warm and quiet: linen paper, pine-green ink, one raspberry accent.
+ * Contrast (WCAG): ink on paper 13.12:1, moss on paper 5.74:1, raspberry on
+ * paper 6.70:1, moss on sand 4.98:1, paper on pine 10.90:1, mist on pine
+ * 7.04:1, blush on pine 6.48:1, paper on raspberry 6.70:1.
+ */
+:root {
+  --color-paper: #f5f0e6;
+  --color-sand: #e9e0cf;
+  --color-ink: #1e2a22;
+  --color-moss: #56614f;
+  --color-pine: #24392c;
+  --color-mist: #c9c3b4;
+  --color-raspberry: #9e2146;
+  --color-blush: #f2a7b8;
+  --color-rule: #cfc5b0; /* decorative lines only */
+
+  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-body: "Instrument Sans Variable", system-ui, sans-serif;
+
+  --text-sm: 0.875rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: clamp(1.5rem, 2.4vw, 2rem);
+  --text-2xl: clamp(2.25rem, 5vw, 3.75rem);
+  --text-hero: clamp(3rem, 9vw, 7.5rem);
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --section: clamp(4.5rem, 11vw, 9rem);
+
+  --max-width: 78rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --measure: 60ch;
+
+  --radius: 2px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}

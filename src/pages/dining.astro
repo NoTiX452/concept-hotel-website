@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import Photo from "../components/Photo.astro";
+import { dining } from "../content/hotel";
+---
+
+<BaseLayout title="Dining" description={dining.intro}>
+  <PageIntro eyebrow="Dining" heading={dining.heading} lede={dining.intro} />
+
+  <div class="container meals">
+    {
+      dining.meals.map((meal, i) => (
+        <section class:list={["meal", { flip: i % 2 === 1 }]} aria-labelledby={`meal-${i}`} data-reveal>
+          <Photo name={meal.photo} ratio="4 / 3" sizes="(min-width: 60rem) 50vw, 100vw" />
+          <div class="meal-text">
+            <h2 id={`meal-${i}`}>{meal.name}</h2>
+            <p class="time">{meal.time}</p>
+            <p>{meal.text}</p>
+          </div>
+        </section>
+      ))
+    }
+  </div>
+
+  <section class="menu on-pine" aria-labelledby="menu-title">
+    <div class="container menu-inner" data-reveal>
+      <span class="eyebrow">A sample dinner · {dining.sampleMenu.season}</span>
+      <h2 id="menu-title" class="visually-hidden">A sample dinner menu</h2>
+      <ol class="courses">
+        {dining.sampleMenu.courses.map((course) => <li>{course}</li>)}
+      </ol>
+      <p class="menu-note">The menu is part of the concept. {dining.packedLunch}</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .meals {
+    display: grid;
+    gap: var(--section);
+  }
+
+  .meal {
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  @media (min-width: 60rem) {
+    .meal {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
+
+    .flip :global(.photo) {
+      order: 2;
+    }
+  }
+
+  .time {
+    color: var(--color-raspberry);
+    font-weight: 600;
+  }
+
+  .meal-text p:last-child {
+    max-width: 46ch;
+    font-size: var(--text-lg);
+  }
+
+  .menu {
+    margin-top: var(--section);
+    padding-block: var(--section);
+    text-align: center;
+  }
+
+  .courses {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-4) auto;
+    padding: 0;
+    list-style: none;
+    max-width: 30ch;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1.25;
+  }
+
+  .courses li + li::before {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    margin: 0 auto var(--space-3);
+    background: var(--color-blush);
+  }
+
+  .menu-note {
+    max-width: 50ch;
+    margin-inline: auto;
+    color: var(--color-mist);
+  }
+</style>

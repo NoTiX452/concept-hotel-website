@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+---
+
+<BaseLayout title="Page not found" noindex>
+  <PageIntro
+    eyebrow="404"
+    heading="This path leads nowhere."
+    lede="There is no page at this address. The link may be wrong, or the page may have moved."
+  >
+    <a class="button" href="/">Back to the house <span aria-hidden="true">→</span></a>
+  </PageIntro>
+</BaseLayout>

@@ -1,0 +1,87 @@
+---
+import { hotel, conceptNotice, nav } from "../content/hotel";
+---
+
+<footer class="site-footer on-pine">
+  <div class="container">
+    <p class="wordmark" aria-hidden="true">{hotel.shortName}</p>
+    <div class="grid">
+      <div>
+        <p class="notice-title">About this site</p>
+        <p class="notice">{conceptNotice.long}</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))
+          }
+          <li><a href="/credits/">About the photos</a></li>
+          <li><a href={hotel.repo}>Source code on GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+    <p class="meta">{hotel.region} · Concept by {hotel.author}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--section);
+    padding-block: var(--space-8) var(--space-4);
+  }
+
+  .wordmark {
+    margin: 0 0 var(--space-6);
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 17vw, 14rem);
+    font-weight: 300;
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    color: var(--color-blush);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, var(--color-paper) 25%, transparent);
+  }
+
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .notice-title {
+    margin-bottom: var(--space-1);
+    font-weight: 600;
+  }
+
+  .notice {
+    max-width: 52ch;
+    color: var(--color-mist);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li a {
+    display: inline-block;
+    padding-block: 0.4rem;
+    color: var(--color-paper);
+  }
+
+  .meta {
+    margin: var(--space-6) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-mist);
+  }
+</style>

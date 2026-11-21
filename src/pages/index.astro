@@ -1,0 +1,204 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Photo from "../components/Photo.astro";
+import RoomCard from "../components/RoomCard.astro";
+import PriceNote from "../components/PriceNote.astro";
+import { hotel, house, rooms, dining, area, gettingHere } from "../content/hotel";
+---
+
+<BaseLayout>
+  <section class="hero container" aria-labelledby="hero-title">
+    <span class="eyebrow">{hotel.region} · {hotel.rooms} rooms</span>
+    <h1 id="hero-title">Where the meadow meets <em>the fir forest.</em></h1>
+    <p class="lede">{hotel.intro}</p>
+  </section>
+
+  <figure class="hero-photo">
+    <Photo name="hero" ratio="21 / 9" sizes="100vw" widths={[640, 1024, 1600, 2400]} eager />
+    <figcaption class="container">{hotel.meaning}</figcaption>
+  </figure>
+
+  <section class="house container" aria-labelledby="house-title" data-reveal>
+    <Photo name="house" ratio="4 / 5" sizes="(min-width: 60rem) 40vw, 100vw" class="house-photo" />
+    <div class="house-text">
+      <span class="eyebrow">The house</span>
+      <h2 id="house-title">{house.heading}</h2>
+      {house.text.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </section>
+
+  <section class="rooms container" aria-labelledby="rooms-title" data-reveal>
+    <div class="section-head">
+      <span class="eyebrow">Rooms</span>
+      <h2 id="rooms-title">Twelve rooms, four kinds.</h2>
+      <p class="lede">Every room has wooden floors, wool blankets and a window onto either the meadow or the forest.</p>
+    </div>
+    <ul class="room-grid">
+      {
+        rooms.map((room) => (
+          <li>
+            <RoomCard room={room} />
+          </li>
+        ))
+      }
+    </ul>
+    <PriceNote />
+  </section>
+
+  <section class="dining on-pine" aria-labelledby="dining-title">
+    <div class="container dining-inner" data-reveal>
+      <div class="dining-text">
+        <span class="eyebrow">Dining</span>
+        <h2 id="dining-title">{dining.heading}</h2>
+        <p class="lede">{dining.intro}</p>
+        <a class="button" href="/dining/">Breakfast and dinner <span aria-hidden="true">→</span></a>
+      </div>
+      <Photo name="dining-breakfast" ratio="4 / 5" sizes="(min-width: 60rem) 40vw, 100vw" class="dining-photo" />
+    </div>
+  </section>
+
+  <section class="area container" aria-labelledby="area-title" data-reveal>
+    <div class="section-head">
+      <span class="eyebrow">The area</span>
+      <h2 id="area-title">{area.heading}</h2>
+      <p class="lede">{area.intro}</p>
+    </div>
+    <ul class="place-grid">
+      {
+        area.places.map((place) => (
+          <li class="place">
+            <Photo name={place.photo} ratio="1 / 1" sizes="(min-width: 60rem) 25vw, (min-width: 40rem) 50vw, 100vw" />
+            <h3>{place.name}</h3>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="photo-note">{area.photoNote}</p>
+    <a class="button" href="/the-area/">What to do nearby <span aria-hidden="true">→</span></a>
+  </section>
+
+  <section class="arrive container" aria-labelledby="arrive-title" data-reveal>
+    <Photo name={gettingHere.photo} ratio="16 / 9" sizes="(min-width: 60rem) 55vw, 100vw" class="arrive-photo" />
+    <div class="arrive-text">
+      <span class="eyebrow">Getting here</span>
+      <h2 id="arrive-title">{gettingHere.heading}</h2>
+      <p>Two airports, one mountain road, and parking beside the house.</p>
+      <a class="button" href="/getting-here/">Plan the journey <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 9vw, 7rem) var(--space-6);
+  }
+
+  .hero h1 {
+    max-width: 14ch;
+  }
+
+  .hero em {
+    font-style: italic;
+    color: var(--color-raspberry);
+  }
+
+  .hero-photo {
+    margin: 0;
+  }
+
+  figcaption {
+    padding-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-moss);
+  }
+
+  .section-head {
+    margin-bottom: var(--space-6);
+  }
+
+  .house {
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+    padding-top: var(--section);
+  }
+
+  @media (min-width: 60rem) {
+    .house {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .house-text p {
+    max-width: 46ch;
+    font-size: var(--text-lg);
+  }
+
+  .photo-note {
+    font-size: var(--text-sm);
+    color: var(--color-moss);
+  }
+
+  .rooms,
+  .area,
+  .arrive {
+    padding-top: var(--section);
+  }
+
+  .room-grid,
+  .place-grid {
+    display: grid;
+    gap: var(--space-6) var(--space-4);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 40rem) {
+    .room-grid,
+    .place-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .place-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .place h3 {
+    margin-top: var(--space-2);
+  }
+
+  .dining {
+    margin-top: var(--section);
+    padding-block: var(--section);
+  }
+
+  .dining-inner {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 60rem) {
+    .dining-inner {
+      grid-template-columns: 1.1fr 1fr;
+    }
+  }
+
+  .arrive {
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  @media (min-width: 60rem) {
+    .arrive {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

@@ -1,0 +1,203 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Photo from "../../components/Photo.astro";
+import PriceNote from "../../components/PriceNote.astro";
+import { rooms } from "../../content/hotel";
+
+export const getStaticPaths = (() =>
+  rooms.map((room) => ({
+    params: { slug: room.slug },
+    props: { room, others: rooms.filter((r) => r.slug !== room.slug) },
+  }))) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { room, others } = Astro.props;
+
+const facts = [
+  { term: "Size", detail: `${room.sizeM2} m²` },
+  { term: "Sleeps", detail: `Up to ${room.guests} guests` },
+  { term: "Beds", detail: room.beds },
+  { term: "View", detail: room.view },
+  { term: "Rooms of this kind", detail: String(room.count) },
+  { term: "From", detail: `${room.priceFrom} lei a night` },
+];
+---
+
+<BaseLayout title={room.name} description={room.summary}>
+  <article>
+    <header class="container head">
+      <a class="back" href="/rooms/"><span aria-hidden="true">←</span> All rooms</a>
+      <h1>{room.name}</h1>
+      <p class="lede">{room.summary}</p>
+    </header>
+
+    <Photo name={room.photo} ratio="16 / 9" sizes="100vw" widths={[640, 1024, 1600, 2400]} eager class="container wide" />
+
+    <div class="container body">
+      <div class="text">
+        {room.description.map((paragraph) => <p>{paragraph}</p>)}
+        <h2 class="features-title">In the room</h2>
+        <ul class="features">
+          {room.features.map((feature) => <li>{feature}</li>)}
+        </ul>
+      </div>
+
+      <aside class="facts-box" aria-label="Room facts">
+        <dl>
+          {
+            facts.map((fact) => (
+              <div class="fact">
+                <dt>{fact.term}</dt>
+                <dd>{fact.detail}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <PriceNote />
+      </aside>
+    </div>
+  </article>
+
+  <nav class="container others" aria-labelledby="others-title">
+    <h2 id="others-title">Other rooms</h2>
+    <ul>
+      {
+        others.map((other) => (
+          <li>
+            <a href={`/rooms/${other.slug}/`}>
+              <span class="other-name">{other.name}</span>
+              <span class="other-meta">
+                {other.sizeM2} m² · up to {other.guests} guests
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</BaseLayout>
+
+<style>
+  .head {
+    padding-block: clamp(2rem, 6vw, 4rem) var(--space-4);
+  }
+
+  .back {
+    display: inline-block;
+    margin-bottom: var(--space-3);
+    padding-block: 0.5rem;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: clamp(2.75rem, 7.5vw, 6rem);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+  }
+
+  @media (min-width: 60rem) {
+    .body {
+      grid-template-columns: 1.6fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .text p {
+    max-width: var(--measure);
+    font-size: var(--text-lg);
+  }
+
+  .features-title {
+    margin-top: var(--space-4);
+    font-size: var(--text-xl);
+  }
+
+  .features {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  .features li::marker {
+    color: var(--color-raspberry);
+  }
+
+  .facts-box {
+    align-self: start;
+    padding: var(--space-4);
+    background: var(--color-sand);
+  }
+
+  dl {
+    margin: 0 0 var(--space-3);
+  }
+
+  .fact {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: var(--space-2);
+    padding-block: 0.6rem;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  dt {
+    color: var(--color-moss);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  @media (max-width: 26rem) {
+    .fact {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+  }
+
+  .others {
+    padding-top: var(--section);
+  }
+
+  .others ul {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .others a {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.25rem var(--space-3);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--color-rule);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .other-name {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+  }
+
+  .others a:hover .other-name {
+    color: var(--color-raspberry);
+  }
+
+  .other-meta {
+    color: var(--color-moss);
+    font-size: var(--text-sm);
+  }
+</style>

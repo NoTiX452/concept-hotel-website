@@ -1,0 +1,27 @@
+---
+interface Props {
+  eyebrow: string;
+  heading: string;
+  lede?: string;
+}
+
+const { eyebrow, heading, lede } = Astro.props;
+---
+
+<header class="page-intro container">
+  <span class="eyebrow">{eyebrow}</span>
+  <h1>{heading}</h1>
+  {lede && <p class="lede">{lede}</p>}
+  <slot />
+</header>
+
+<style>
+  .page-intro {
+    padding-block: clamp(3rem, 8vw, 6rem) var(--space-6);
+  }
+
+  h1 {
+    max-width: 16ch;
+    font-size: clamp(2.75rem, 7.5vw, 6rem);
+  }
+</style>

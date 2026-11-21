@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import RoomCard from "../../components/RoomCard.astro";
+import PriceNote from "../../components/PriceNote.astro";
+import { rooms, hotel } from "../../content/hotel";
+---
+
+<BaseLayout title="Rooms" description="Four kinds of room, twelve in all, facing the meadow or the forest.">
+  <PageIntro
+    eyebrow="Rooms"
+    heading="Twelve rooms, four kinds."
+    lede={`${hotel.rooms} rooms over three floors. Wooden floors, wool blankets, and a window onto either the meadow or the fir forest.`}
+  />
+
+  <div class="container">
+    <ul class="grid">
+      {
+        rooms.map((room) => (
+          <li>
+            <RoomCard room={room} />
+          </li>
+        ))
+      }
+    </ul>
+    <PriceNote />
+  </div>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-8) var(--space-4);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

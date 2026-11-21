@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import Photo from "../components/Photo.astro";
+import { gettingHere } from "../content/hotel";
+---
+
+<BaseLayout title="Getting here" description="How to reach the Apuseni Mountains: airports, the road up, and arrival.">
+  <PageIntro eyebrow="Getting here" heading={gettingHere.heading} lede={gettingHere.intro} />
+
+  <Photo name={gettingHere.photo} ratio="21 / 9" sizes="100vw" widths={[640, 1024, 1600, 2400]} eager class="container" />
+
+  <ol class="container steps">
+    {
+      gettingHere.steps.map((step, i) => (
+        <li class="step" data-reveal>
+          <span class="number" aria-hidden="true">
+            {i + 1}
+          </span>
+          <h2>{step.title}</h2>
+          <p>{step.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</BaseLayout>
+
+<style>
+  .steps {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 52rem) {
+    .steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .step {
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-ink);
+  }
+
+  .number {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--color-raspberry);
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+  }
+</style>

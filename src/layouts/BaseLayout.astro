@@ -1,0 +1,69 @@
+---
+import "@fontsource-variable/fraunces/opsz.css";
+import "@fontsource-variable/instrument-sans/wght.css";
+import displayFont from "@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2?url";
+import bodyFont from "@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2?url";
+import "../styles/global.css";
+import { hotel, conceptNotice } from "../content/hotel";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title, description = hotel.intro, noindex = false } = Astro.props;
+const fullTitle = title ? `${title} · ${hotel.name} (concept)` : `${hotel.name} (concept project)`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={`${conceptNotice.short} ${description}`} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#24392c" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <p class="concept-bar">
+      <strong>Concept project.</strong>
+      <span>Zmeuriș is a made-up hotel by {hotel.author}. Nothing here can be booked.</span>
+    </p>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import "../scripts/reveal";
+    </script>
+  </body>
+</html>
+
+<style>
+  .concept-bar {
+    margin: 0;
+    padding: 0.55rem var(--gutter);
+    background: var(--color-raspberry);
+    color: var(--color-paper);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  .concept-bar strong {
+    font-weight: 700;
+    margin-right: 0.35rem;
+  }
+</style>

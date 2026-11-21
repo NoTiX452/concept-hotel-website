@@ -1,0 +1,71 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import Photo from "../components/Photo.astro";
+import { area } from "../content/hotel";
+---
+
+<BaseLayout title="The area" description={area.intro}>
+  <PageIntro eyebrow="The area" heading={area.heading} lede={area.intro}>
+    <p class="photo-note">
+      {area.photoNote} <a href="/credits/">About the photos</a>.
+    </p>
+  </PageIntro>
+
+  <div class="container places">
+    {
+      area.places.map((place, i) => (
+        <section class:list={["place", { flip: i % 2 === 1 }]} aria-labelledby={`place-${i}`} data-reveal>
+          <Photo name={place.photo} ratio="3 / 2" sizes="(min-width: 60rem) 55vw, 100vw" />
+          <div class="place-text">
+            <span class="eyebrow">{String(i + 1).padStart(2, "0")}</span>
+            <h2 id={`place-${i}`}>{place.name}</h2>
+            <p>{place.text}</p>
+          </div>
+        </section>
+      ))
+    }
+    <p class="note">{area.note}</p>
+  </div>
+</BaseLayout>
+
+<style>
+  .photo-note {
+    font-size: var(--text-sm);
+    color: var(--color-moss);
+  }
+
+  .places {
+    display: grid;
+    gap: var(--section);
+  }
+
+  .place {
+    display: grid;
+    gap: var(--space-4);
+    align-items: end;
+  }
+
+  @media (min-width: 60rem) {
+    .place {
+      grid-template-columns: 1.3fr 1fr;
+      gap: var(--space-8);
+    }
+
+    .flip :global(.photo) {
+      order: 2;
+    }
+  }
+
+  .place-text p {
+    max-width: 44ch;
+    font-size: var(--text-lg);
+  }
+
+  .note {
+    max-width: var(--measure);
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid var(--color-raspberry);
+    background: var(--color-sand);
+  }
+</style>
