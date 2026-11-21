@@ -1,44 +1,315 @@
 ---
+// Rooms: a catalogue. Each room gets its own composition, chosen for the
+// shape of its photo, then a table compares all four at a glance.
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PageIntro from "../../components/PageIntro.astro";
-import RoomCard from "../../components/RoomCard.astro";
+import Photo from "../../components/Photo.astro";
+import Split from "../../components/Split.astro";
 import PriceNote from "../../components/PriceNote.astro";
-import { rooms, hotel } from "../../content/hotel";
+import { rooms, hotel, home } from "../../content/hotel";
+
+// Photo frame per layout: the loft photo is landscape, the others portrait.
+const frames = [
+  { ratio: "4 / 5", sizes: "(min-width: 60rem) 55vw, 100vw" },
+  { ratio: "4 / 3", sizes: "(min-width: 60rem) 55vw, 100vw" },
+  { ratio: "21 / 9", sizes: "100vw" },
+  { ratio: "3 / 4", sizes: "(min-width: 60rem) 40vw, 100vw" },
+];
 ---
 
 <BaseLayout title="Rooms" description="Four kinds of room, twelve in all, facing the meadow or the forest.">
-  <PageIntro
-    eyebrow="Rooms"
-    heading="Twelve rooms, four kinds."
-    lede={`${hotel.rooms} rooms over three floors. Wooden floors, wool blankets, and a window onto either the meadow or the fir forest.`}
-  />
+  <header class="intro container">
+    <span class="eyebrow"><span class="num">{hotel.rooms}</span>Rooms over three floors</span>
+    <Split as="h1" text={home.rooms.heading} delay={100} />
+    <p class="lede" data-reveal style="--delay: 300ms">
+      Wooden floors, wool blankets, and a window onto either the meadow or the fir forest. Choose your side of the house.
+    </p>
+  </header>
 
-  <div class="container">
-    <ul class="grid">
-      {
-        rooms.map((room) => (
-          <li>
-            <RoomCard room={room} />
-          </li>
-        ))
-      }
-    </ul>
-    <PriceNote />
+  <div class="catalogue container">
+    {
+      rooms.map((room, i) => (
+        <article class:list={["room", `layout-${i % 4}`]} aria-labelledby={`room-${room.slug}`}>
+          <a class="room-photo" href={`/rooms/${room.slug}/`} tabindex="-1" aria-hidden="true">
+            <Photo
+              name={room.photo}
+              ratio={frames[i % 4].ratio}
+              sizes={frames[i % 4].sizes}
+              widths={[640, 960, 1280, 1600, 2000]}
+              reveal="mask"
+              parallax={0.06}
+              transitionName={`room-${room.slug}`}
+            />
+          </a>
+          <div class="room-text" data-reveal>
+            <span class="room-num" aria-hidden="true">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h2 id={`room-${room.slug}`}>
+              <a href={`/rooms/${room.slug}/`}>{room.name}</a>
+            </h2>
+            <p class="room-summary">{room.summary}</p>
+            <p class="room-facts">
+              <span>{room.sizeM2} m²</span>
+              <span>Up to {room.guests} guests</span>
+              <span>From {room.priceFrom} lei</span>
+            </p>
+            <a class="link-arrow" href={`/rooms/${room.slug}/`}>
+              See the {room.name} <span class="line" aria-hidden="true" />
+            </a>
+          </div>
+        </article>
+      ))
+    }
   </div>
+
+  <section class="compare tone-paper section" aria-labelledby="compare-title">
+    <div class="container">
+      <span class="eyebrow"><span class="berry" aria-hidden="true"></span>At a glance</span>
+      <h2 id="compare-title">Four rooms, side by side.</h2>
+      <div class="table-wrap" role="region" aria-labelledby="compare-title" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Room</th>
+              <th scope="col">Size</th>
+              <th scope="col">Sleeps</th>
+              <th scope="col">Beds</th>
+              <th scope="col">View</th>
+              <th scope="col">Of this kind</th>
+              <th scope="col">From</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              rooms.map((room) => (
+                <tr>
+                  <th scope="row">
+                    <a href={`/rooms/${room.slug}/`}>{room.name}</a>
+                  </th>
+                  <td>{room.sizeM2} m²</td>
+                  <td>{room.guests}</td>
+                  <td>{room.beds}</td>
+                  <td>{room.view}</td>
+                  <td>{room.count}</td>
+                  <td class="price">{room.priceFrom} lei</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <PriceNote />
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .grid {
-    display: grid;
-    gap: var(--space-8) var(--space-4);
-    margin: 0 0 var(--space-6);
-    padding: 0;
-    list-style: none;
+  .intro {
+    padding-block: clamp(3rem, 8vw, 7rem) var(--section);
   }
 
-  @media (min-width: 40rem) {
-    .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .intro :global(h1) {
+    max-width: 11ch;
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+  }
+
+  .intro .lede {
+    margin-top: var(--space-4);
+    margin-left: auto;
+    max-width: 38ch;
+  }
+
+  .catalogue {
+    display: grid;
+    gap: var(--section);
+    padding-bottom: var(--section);
+  }
+
+  .room {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .room-photo {
+    display: block;
+  }
+
+  .room-photo :global(img) {
+    transition: transform 1400ms var(--ease-out);
+  }
+
+  .room:hover .room-photo :global(img) {
+    transform: scale(1.04);
+  }
+
+  .room-num {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 2rem + 4vw, 6rem);
+    font-style: italic;
+    font-weight: 200;
+    line-height: 0.8;
+    color: var(--accent);
+  }
+
+  .room-text h2 {
+    font-size: clamp(2.5rem, 1.8rem + 3vw, 4.75rem);
+    font-weight: 290;
+  }
+
+  /* Colour, not italics, on hover: italics would rewrap the name under the pointer. */
+  .room-text h2 a {
+    text-decoration: none;
+    transition: color 400ms var(--ease);
+  }
+
+  .room-text h2 a:hover,
+  .room:hover .room-text h2 a {
+    color: var(--accent);
+  }
+
+  .room-summary {
+    max-width: 34ch;
+    font-size: var(--text-lg);
+    color: var(--fg-soft);
+  }
+
+  .room-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--space-3);
+    margin: var(--space-3) 0;
+    padding-block: var(--space-2);
+    border-block: 1px solid var(--rule);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  @media (min-width: 60rem) {
+    .room {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 0 var(--space-4);
+      align-items: end;
     }
+
+    /* 01: tall photo left, text low on the right. */
+    .layout-0 .room-photo {
+      grid-column: 1 / 8;
+    }
+    .layout-0 .room-text {
+      grid-column: 9 / 13;
+    }
+
+    /* 02: text high on the left, photo dropped on the right. */
+    .layout-1 {
+      align-items: start;
+    }
+    .layout-1 .room-text {
+      grid-column: 1 / 5;
+      grid-row: 1;
+      padding-top: var(--space-12);
+    }
+    .layout-1 .room-photo {
+      grid-column: 6 / 13;
+      grid-row: 1;
+    }
+
+    /* 03: the loft, wide under its roof, text in two columns beneath. */
+    .layout-2 .room-photo {
+      grid-column: 1 / 13;
+    }
+    .layout-2 .room-text {
+      grid-column: 1 / 13;
+      display: grid;
+      grid-template-columns: auto 1fr 1fr;
+      gap: 0 var(--space-6);
+      align-items: start;
+      margin-top: var(--space-4);
+    }
+    .layout-2 .room-num {
+      grid-row: span 3;
+    }
+    .layout-2 .room-summary {
+      grid-column: 3;
+      grid-row: 1 / 3;
+    }
+    .layout-2 .room-facts,
+    .layout-2 .link-arrow {
+      grid-column: 2;
+    }
+
+    /* 04: a narrow portrait in the middle, text beside it. */
+    .layout-3 .room-photo {
+      grid-column: 3 / 8;
+    }
+    .layout-3 .room-text {
+      grid-column: 9 / 13;
+    }
+  }
+
+  /* ---------- Comparison table ---------- */
+
+  .compare h2 {
+    margin-bottom: var(--space-6);
+  }
+
+  .table-wrap {
+    margin-bottom: var(--space-4);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 54rem;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+  }
+
+  tbody th {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  tbody th a {
+    text-decoration: none;
+  }
+
+  tbody th a:hover {
+    color: var(--accent);
+  }
+
+  tbody tr {
+    transition: background-color 300ms var(--ease);
+  }
+
+  tbody tr:hover {
+    background: color-mix(in srgb, var(--moss) 10%, transparent);
+  }
+
+  .price {
+    white-space: nowrap;
+    font-weight: 600;
   }
 </style>

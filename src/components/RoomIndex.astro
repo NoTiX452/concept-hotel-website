@@ -1,0 +1,298 @@
+---
+// The rooms as an editorial index. Desktop: a list of names beside a
+// sticky photo that changes as you point at or tab to each room. Phones:
+// each row carries its own photo. The photos repeat what the text says, so
+// they are hidden from screen readers here; the room pages describe them.
+import Photo from "./Photo.astro";
+import type { Room } from "../content/hotel";
+
+interface Props {
+  rooms: Room[];
+}
+
+const { rooms } = Astro.props;
+---
+
+<div class="room-index">
+  <ol class="list">
+    {
+      rooms.map((room, i) => (
+        <li data-reveal style={`--delay: ${i * 90}ms`}>
+          <a class="row" href={`/rooms/${room.slug}/`} data-room={i}>
+            <span class="thumb" aria-hidden="true">
+              <Photo
+                name={room.photo}
+                ratio="4 / 3"
+                sizes="100vw"
+                widths={[480, 800, 1200]}
+                transitionName={`room-${room.slug}`}
+              />
+            </span>
+            <span class="num">{String(i + 1).padStart(2, "0")}</span>
+            <span class="name">{room.name}</span>
+            <span class="meta">
+              {room.sizeM2} m² · up to {room.guests} guests · {room.count} {room.count === 1 ? "room" : "rooms"}
+            </span>
+            <span class="price">from {room.priceFrom} lei</span>
+            <span class="go" aria-hidden="true" />
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="preview" aria-hidden="true">
+    <div class="frames">
+      {
+        rooms.map((room, i) => (
+          <div class="frame" data-frame={i} data-active={i === 0 ? "" : undefined}>
+            <Photo
+              name={room.photo}
+              ratio="4 / 5"
+              fill
+              sizes="(min-width: 60rem) 38vw, 1px"
+              widths={[640, 960, 1280]}
+              transitionName={`room-${room.slug}`}
+            />
+            <p class="caption">{room.summary}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  // Point at or tab to a row: its photo takes the frame.
+  for (const index of document.querySelectorAll<HTMLElement>(".room-index")) {
+    const frames = index.querySelectorAll<HTMLElement>("[data-frame]");
+
+    // Hidden frames are clipped, so lazy loading would never fetch them and
+    // the first hover would show an empty frame. Fetch them as the section nears.
+    const preview = index.querySelector<HTMLElement>(".preview");
+    if (preview && "IntersectionObserver" in window) {
+      const warm = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          preview.querySelectorAll("img").forEach((img) => (img.loading = "eager"));
+          warm.disconnect();
+        },
+        { rootMargin: "50% 0px" },
+      );
+      warm.observe(preview);
+    }
+    const show = (n: string) => {
+      frames.forEach((frame) => frame.toggleAttribute("data-active", frame.dataset.frame === n));
+    };
+    index.querySelectorAll<HTMLElement>("[data-room]").forEach((row) => {
+      const n = row.dataset.room!;
+      row.addEventListener("pointerenter", () => show(n));
+      row.addEventListener("focus", () => show(n));
+    });
+  }
+</script>
+
+<style>
+  .room-index {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+
+  .list li {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    grid-template-areas:
+      "thumb thumb thumb"
+      "num name go"
+      ". meta meta"
+      ". price price";
+    align-items: baseline;
+    gap: 0.25rem var(--space-2);
+    padding-block: var(--space-4);
+    color: var(--fg);
+    text-decoration: none;
+  }
+
+  .thumb {
+    grid-area: thumb;
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  .num {
+    grid-area: num;
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .name {
+    grid-area: name;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 1.4rem + 3vw, 4.25rem);
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    transition:
+      transform 700ms var(--ease-out),
+      color 400ms var(--ease);
+  }
+
+  .meta,
+  .price {
+    font-size: var(--text-sm);
+    color: var(--fg-soft);
+  }
+
+  .meta {
+    grid-area: meta;
+  }
+
+  .price {
+    grid-area: price;
+  }
+
+  /* The arrow: a line that extends towards the name's end. */
+  .go {
+    grid-area: go;
+    align-self: center;
+    position: relative;
+    width: 2rem;
+    height: 1px;
+    background: currentColor;
+    transition:
+      width 700ms var(--ease-out),
+      background-color 300ms var(--ease);
+  }
+
+  .go::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 9px;
+    height: 9px;
+    border-top: 1px solid currentColor;
+    border-right: 1px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .row:hover .go,
+  .row:focus-visible .go {
+    width: 3.5rem;
+    color: var(--accent);
+    background-color: var(--accent);
+  }
+
+  /* Hover moves and colours the name; it never changes its width, which
+     would reflow the text away from the pointer. */
+  .row:hover .name,
+  .row:focus-visible .name {
+    transform: translateX(0.5rem);
+    color: var(--accent);
+  }
+
+  .preview {
+    display: none;
+  }
+
+  @media (min-width: 60rem) {
+    .room-index {
+      grid-template-columns: 1.25fr 1fr;
+      gap: clamp(3rem, 6vw, 7rem);
+      align-items: start;
+    }
+
+    .thumb {
+      display: none;
+    }
+
+    .row {
+      grid-template-columns: 3rem 1fr auto auto;
+      grid-template-areas:
+        "num name name go"
+        ". meta price price";
+      padding-block: var(--space-4) var(--space-3);
+    }
+
+    .price {
+      text-align: right;
+    }
+
+    /* Dim the other rows while one is pointed at. */
+    .list:has(.row:hover) .row:not(:hover) {
+      opacity: 0.45;
+    }
+
+    .row {
+      transition: opacity 500ms var(--ease);
+    }
+
+    .preview {
+      display: block;
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+
+    .frames {
+      position: relative;
+      aspect-ratio: 4 / 5;
+    }
+
+    .frame {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      clip-path: inset(0 0 0 100%);
+      /* The outgoing photo stays whole underneath until the new one has wiped in. */
+      transition:
+        clip-path 0s 900ms,
+        opacity 0s 900ms;
+    }
+
+    .frame[data-active] {
+      z-index: 1;
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+      transition:
+        clip-path 900ms var(--ease-in-out),
+        opacity 0s;
+    }
+
+    .frame :global(img) {
+      transform: scale(1.08);
+      transition: transform 1600ms var(--ease-out);
+    }
+
+    .frame[data-active] :global(img) {
+      transform: none;
+    }
+
+    .caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      padding: var(--space-6) var(--space-3) var(--space-3);
+      background: linear-gradient(to top, color-mix(in srgb, var(--pine) 80%, transparent), transparent);
+      color: var(--cream);
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-style: italic;
+      line-height: 1.35;
+    }
+  }
+</style>

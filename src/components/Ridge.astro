@@ -1,0 +1,56 @@
+---
+// A thin mountain ridge line. Where the browser supports scroll-driven
+// animations, it draws itself as it scrolls into view; elsewhere it is
+// simply drawn.
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<svg class:list={["ridge", className]} viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path
+    pathLength="1"
+    d="M0 104 L70 92 L118 98 L190 66 L236 78 L300 40 L352 62 L398 54 L470 86 L540 70 L600 24 L648 46 L690 38 L760 74 L828 60 L880 82 L948 50 L1004 66 L1060 44 L1130 88 L1200 80"
+  ></path>
+</svg>
+
+<style>
+  .ridge {
+    display: block;
+    width: 100%;
+    height: clamp(3rem, 8vw, 7rem);
+    overflow: visible;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      path {
+        animation: draw linear both;
+        animation-timeline: view();
+        /* Fully drawn once fully on screen: it also finishes at the foot of a page. */
+        animation-range: entry 0% entry 100%;
+      }
+    }
+  }
+
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

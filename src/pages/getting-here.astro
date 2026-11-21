@@ -1,61 +1,218 @@
 ---
+// Getting here: a journey. The road photo holds still while the three
+// steps pass along a line that draws itself as you read down.
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageIntro from "../components/PageIntro.astro";
 import Photo from "../components/Photo.astro";
+import Split from "../components/Split.astro";
 import { gettingHere } from "../content/hotel";
 ---
 
 <BaseLayout title="Getting here" description="How to reach the Apuseni Mountains: airports, the road up, and arrival.">
-  <PageIntro eyebrow="Getting here" heading={gettingHere.heading} lede={gettingHere.intro} />
+  <header class="intro container">
+    <span class="eyebrow"><span class="num">V</span>Getting here</span>
+    <Split as="h1" text={gettingHere.heading} delay={100} />
+    <p class="lede" data-reveal style="--delay: 350ms">{gettingHere.intro}</p>
+  </header>
 
-  <Photo name={gettingHere.photo} ratio="21 / 9" sizes="100vw" widths={[640, 1024, 1600, 2400]} eager class="container" />
+  <div class="journey container">
+    <div class="road">
+      <Photo
+        name={gettingHere.photo}
+        fill
+        eager
+        sizes="(min-width: 60rem) 45vw, 100vw"
+        widths={[640, 960, 1280, 1600]}
+        focus="center 75%"
+      />
+    </div>
 
-  <ol class="container steps">
-    {
-      gettingHere.steps.map((step, i) => (
-        <li class="step" data-reveal>
-          <span class="number" aria-hidden="true">
-            {i + 1}
-          </span>
-          <h2>{step.title}</h2>
-          <p>{step.text}</p>
-        </li>
-      ))
-    }
-  </ol>
+    <ol class="steps">
+      {
+        gettingHere.steps.map((step, i) => (
+          <li class="step">
+            <span class="dot" aria-hidden="true" />
+            <span class="step-num" aria-hidden="true" data-reveal>
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h2 data-reveal style="--delay: 80ms">
+              {step.title}
+            </h2>
+            <p data-reveal style="--delay: 160ms">
+              {step.text}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <section class="onward tone-forest section" aria-labelledby="onward-title">
+    <div class="container onward-inner">
+      <h2 id="onward-title" data-reveal>Once you are <em>up here.</em></h2>
+      <div class="onward-links" data-reveal style="--delay: 150ms">
+        <a class="button" href="/rooms/">Choose a room <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="link-arrow" href="/the-area/">What to do nearby <span class="line" aria-hidden="true"></span></a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .steps {
+  .intro {
+    padding-block: clamp(3rem, 8vw, 7rem) var(--space-12);
+  }
+
+  .intro :global(h1) {
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+  }
+
+  .intro .lede {
+    max-width: 44ch;
+    margin: var(--space-4) 0 0 auto;
+  }
+
+  .journey {
     display: grid;
-    gap: var(--space-6);
-    margin-top: var(--space-8);
-    padding: 0;
+    gap: var(--space-8);
+    padding-bottom: var(--section);
+  }
+
+  .road {
+    position: relative;
+    height: 70svh;
+    min-height: 22rem;
+  }
+
+  @media (min-width: 60rem) {
+    .journey {
+      grid-template-columns: 5fr 1fr 6fr;
+      gap: 0;
+      align-items: start;
+    }
+
+    .road {
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-3));
+      height: calc(100svh - var(--header-h) - var(--space-6));
+    }
+
+    .steps {
+      grid-column: 3;
+    }
+  }
+
+  /* ---------- Steps on a line ---------- */
+
+  .steps {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 var(--space-6);
     list-style: none;
   }
 
-  @media (min-width: 52rem) {
-    .steps {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* The faint full line, and over it the line that draws as you scroll. */
+  .steps::before,
+  .steps::after {
+    content: "";
+    position: absolute;
+    left: 0.3rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background: var(--rule);
+  }
+
+  .steps::after {
+    background: var(--accent);
+    transform-origin: top;
+    transform: scaleY(1);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .steps::after {
+        animation: draw-line linear both;
+        animation-timeline: view();
+        animation-range: entry 30% exit 60%;
+      }
+    }
+  }
+
+  @keyframes draw-line {
+    from {
+      transform: scaleY(0);
     }
   }
 
   .step {
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--color-ink);
+    position: relative;
+    padding-bottom: clamp(4rem, 16vh, 10rem);
   }
 
-  .number {
+  .step:last-child {
+    padding-bottom: 0;
+  }
+
+  .dot {
+    position: absolute;
+    left: calc(-1 * var(--space-6) + 0.3rem - 5px);
+    top: 0.6rem;
+    z-index: 1;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .step-num {
     display: block;
-    margin-bottom: var(--space-2);
     font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 300;
-    line-height: 1;
-    color: var(--color-raspberry);
+    font-size: clamp(4rem, 2.5rem + 6vw, 8.5rem);
+    font-style: italic;
+    font-weight: 200;
+    letter-spacing: -0.05em;
+    line-height: 0.85;
+    color: var(--moss);
   }
 
-  h2 {
-    font-size: var(--text-xl);
+  .step h2 {
+    margin-top: var(--space-2);
+    font-size: var(--text-2xl);
+  }
+
+  .step p {
+    max-width: 38ch;
+    font-size: var(--text-lg);
+    color: var(--fg-soft);
+  }
+
+  /* ---------- Onward ---------- */
+
+  .onward-inner {
+    display: grid;
+    gap: var(--space-4);
+    align-items: end;
+  }
+
+  @media (min-width: 60rem) {
+    .onward-inner {
+      grid-template-columns: 1.3fr 1fr;
+    }
+  }
+
+  .onward h2 {
+    margin: 0;
+    font-size: var(--text-3xl);
+  }
+
+  .onward-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
   }
 </style>

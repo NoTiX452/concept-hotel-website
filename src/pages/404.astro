@@ -1,14 +1,65 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageIntro from "../components/PageIntro.astro";
+import Photo from "../components/Photo.astro";
+import Split from "../components/Split.astro";
 ---
 
-<BaseLayout title="Page not found" noindex>
-  <PageIntro
-    eyebrow="404"
-    heading="This path leads nowhere."
-    lede="There is no page at this address. The link may be wrong, or the page may have moved."
-  >
-    <a class="button" href="/">Back to the house <span aria-hidden="true">→</span></a>
-  </PageIntro>
+<BaseLayout title="Page not found" noindex headerTone="light">
+  <section class="lost tone-night" aria-labelledby="lost-title">
+    <Photo name="area-plateau" fill eager sizes="(orientation: portrait) 150vh, 100vw" widths={[640, 1024, 1600, 1920]} class="lost-photo" />
+    <div class="shade" aria-hidden="true"></div>
+    <div class="container lost-text">
+      <span class="eyebrow"><span class="num">404</span>Off the map</span>
+      <Split as="h1" id="lost-title" text="This path leads *nowhere.*" delay={100} />
+      <p class="lede" data-reveal style="--delay: 350ms">
+        There is no page at this address. The link may be wrong, or the page may have moved.
+      </p>
+      <a class="button" href="/" data-reveal style="--delay: 450ms">Back to the house <span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .lost {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: max(34rem, calc(100svh - 2rem));
+    margin-top: calc(-1 * var(--header-h));
+    overflow: hidden;
+  }
+
+  .lost > :global(.lost-photo) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, color-mix(in srgb, var(--night) 55%, transparent), transparent 22%),
+      linear-gradient(to top, color-mix(in srgb, var(--night) 90%, transparent), color-mix(in srgb, var(--night) 35%, transparent) 70%);
+  }
+
+  .lost-text {
+    position: relative;
+    padding-block: calc(var(--header-h) + var(--space-8)) var(--space-12);
+  }
+
+  .lost-text :global(h1) {
+    max-width: 10ch;
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+  }
+
+  .lede {
+    color: color-mix(in srgb, var(--cream) 88%, transparent);
+  }
+
+  .button {
+    margin-top: var(--space-3);
+  }
+</style>

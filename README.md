@@ -14,6 +14,23 @@ The booking web app for the same hotel is a separate concept:
 - Fraunces and Instrument Sans, self-hosted (SIL Open Font License)
 - Hosted on Cloudflare Workers static assets (`wrangler.jsonc`)
 
+## Design
+
+The house stands where the meadow meets the forest, and the site is built on
+that edge: light cream "meadow" sections give way to forest green and pine as
+you scroll. The quality bar for this and future projects is in
+[DESIGN_STANDARD.md](DESIGN_STANDARD.md).
+
+- Tokens: `src/styles/tokens.css` (palette with calculated WCAG contrast).
+- Motion uses no library. Scroll reveals are in `src/scripts/reveal.ts`,
+  parallax in `src/scripts/parallax.ts`, and the header and phone menu in
+  `src/scripts/header.ts`. Scroll-driven CSS animations and cross-page view
+  transitions apply only where the browser supports them.
+- Every effect respects `prefers-reduced-motion`, and all content shows
+  without JavaScript.
+- Headings in `src/content/hotel.ts` mark one italic phrase with
+  `*asterisks*`; `src/components/Split.astro` sets them word by word.
+
 ## Run it
 
 Run these in PowerShell on Windows (a lowercase `d:\` path from Git Bash makes

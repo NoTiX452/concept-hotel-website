@@ -1,30 +1,52 @@
 /*
  * Design tokens for Zmeuriș Mountain House.
- * Light, warm and quiet: linen paper, pine-green ink, one raspberry accent.
- * Contrast (WCAG): ink on paper 13.12:1, moss on paper 5.74:1, raspberry on
- * paper 6.70:1, moss on sand 4.98:1, paper on pine 10.90:1, mist on pine
- * 7.04:1, blush on pine 6.48:1, paper on raspberry 6.70:1.
+ *
+ * Idea: the house stands on the edge between meadow and forest. Light pages
+ * are the meadow (cream, paper); dark pages are the forest (forest, pine).
+ * Raspberry, the plant the house is named after, is the one accent.
+ *
+ * Contrast (WCAG 2, calculated): pine on cream 12.12:1, pine on paper 13.63:1,
+ * moss-ink on cream 5.50:1, moss-ink on paper 6.19:1, raspberry on cream
+ * 5.88:1, cream on forest 8.12:1, cream on pine 12.12:1, lichen on pine
+ * 8.50:1, lichen on forest 5.69:1, blush on pine 7.72:1, blush on forest
+ * 5.17:1. Moss on cream is 3.21:1: large text (24 px+) and rules only.
  */
 :root {
-  --color-paper: #f5f0e6;
-  --color-sand: #e9e0cf;
-  --color-ink: #1e2a22;
-  --color-moss: #56614f;
-  --color-pine: #24392c;
-  --color-mist: #c9c3b4;
-  --color-raspberry: #9e2146;
-  --color-blush: #f2a7b8;
-  --color-rule: #cfc5b0; /* decorative lines only */
+  /* The brief's palette. */
+  --pine: #14271f;
+  --forest: #294537;
+  --moss: #71816b;
+  --cream: #e7e2d5;
 
-  --font-display: "Fraunces Variable", Georgia, serif;
+  /* Supporting tones. */
+  --paper: #f2efe6; /* lighter meadow surface */
+  --moss-ink: #4e5c49; /* small secondary text on light */
+  --lichen: #b9c2ae; /* secondary text on dark */
+  --raspberry: #9e2146; /* the accent, on light */
+  --blush: #e9a3b2; /* the accent, on dark */
+  --larch: #c07a4a; /* warm wood, decorative */
+  --night: #0d1b15; /* deepest shade, below pine */
+
+  /* Semantic colours. Dark sections (.tone-forest, .tone-pine) remap these. */
+  --bg: var(--cream);
+  --fg: var(--pine);
+  --fg-soft: var(--moss-ink);
+  --accent: var(--raspberry);
+  --rule: color-mix(in srgb, var(--pine) 18%, transparent);
+
+  --font-display: "Fraunces Variable", "Iowan Old Style", Georgia, serif;
   --font-body: "Instrument Sans Variable", system-ui, sans-serif;
 
+  /* Type scale: fluid between a 360 px phone and a 1600 px screen. */
+  --text-xs: 0.75rem;
   --text-sm: 0.875rem;
-  --text-base: 1.0625rem;
-  --text-lg: 1.25rem;
-  --text-xl: clamp(1.5rem, 2.4vw, 2rem);
-  --text-2xl: clamp(2.25rem, 5vw, 3.75rem);
-  --text-hero: clamp(3rem, 9vw, 7.5rem);
+  --text-base: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.375rem);
+  --text-xl: clamp(1.5rem, 1.3rem + 0.9vw, 2.25rem);
+  --text-2xl: clamp(2.25rem, 1.6rem + 2.9vw, 4.5rem);
+  --text-3xl: clamp(2.75rem, 1.7rem + 4.6vw, 7rem);
+  --text-hero: clamp(3.25rem, 1.6rem + 7.2vw, 10rem);
+  --text-statement: clamp(1.65rem, 1.2rem + 2vw, 3.4rem);
 
   --space-1: 0.5rem;
   --space-2: 1rem;
@@ -32,12 +54,19 @@
   --space-4: 2rem;
   --space-6: 3rem;
   --space-8: 4rem;
-  --section: clamp(4.5rem, 11vw, 9rem);
+  --space-12: 6rem;
+  --section: clamp(5.5rem, 4rem + 8vw, 12rem);
 
-  --max-width: 78rem;
-  --gutter: clamp(1.25rem, 4vw, 3rem);
-  --measure: 60ch;
+  --max-width: 90rem;
+  --gutter: clamp(1.25rem, 0.6rem + 3vw, 4rem);
+  --measure: 62ch;
+  --header-h: 4.75rem;
 
   --radius: 2px;
   --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 240ms;
+  --dur: 600ms;
+  --dur-slow: 1100ms;
 }

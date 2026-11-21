@@ -1,6 +1,11 @@
 ---
+// A quiet page opening: label, a large heading that rises word by word,
+// and an optional lede set to the right.
+import Split from "./Split.astro";
+
 interface Props {
   eyebrow: string;
+  // May mark an italic phrase with *asterisks*.
   heading: string;
   lede?: string;
 }
@@ -9,19 +14,33 @@ const { eyebrow, heading, lede } = Astro.props;
 ---
 
 <header class="page-intro container">
-  <span class="eyebrow">{eyebrow}</span>
-  <h1>{heading}</h1>
-  {lede && <p class="lede">{lede}</p>}
+  <span class="eyebrow"><span class="berry" aria-hidden="true"></span>{eyebrow}</span>
+  <Split as="h1" text={heading} delay={100} />
+  {
+    lede && (
+      <p class="lede" data-reveal style="--delay: 350ms">
+        {lede}
+      </p>
+    )
+  }
   <slot />
 </header>
 
 <style>
   .page-intro {
-    padding-block: clamp(3rem, 8vw, 6rem) var(--space-6);
+    padding-block: clamp(3rem, 8vw, 7rem) var(--space-12);
   }
 
-  h1 {
-    max-width: 16ch;
-    font-size: clamp(2.75rem, 7.5vw, 6rem);
+  .page-intro :global(h1) {
+    max-width: 12ch;
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+  }
+
+  .lede {
+    max-width: 44ch;
+    margin: var(--space-4) 0 0 auto;
   }
 </style>

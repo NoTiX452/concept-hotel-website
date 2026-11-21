@@ -1,8 +1,15 @@
 ---
-// A photo from the slot list.
-// Production build: every photo must have a file, alt text and a credit, or the build stops.
-// `astro dev`: a photo with a file but no credit shows with a "credit pending" tag,
-// and a slot without a file shows as a labelled pending box.
+// A photo from the slot list (src/content/photos.ts).
+// Production build: every photo must have a file and alt text, or the build stops.
+// `astro dev`: a slot without a file shows as a labelled pending box.
+//
+// Presentation options:
+// - ratio: the frame's aspect ratio; the photo is cropped to fill it.
+// - fill: the frame takes its parent's height instead of a ratio.
+// - reveal="mask": the frame opens upward when it scrolls into view.
+// - parallax: the photo drifts inside its frame (0.08 = 8% of the scroll).
+// - transitionName: a view-transition-name, so the photo can carry over
+//   to the next page (a room card growing into the room page).
 import { Picture } from "astro:assets";
 import { resolvePhoto } from "../lib/photos";
 import type { PhotoName } from "../content/photos";
@@ -13,11 +20,30 @@ interface Props {
   widths?: number[];
   class?: string;
   eager?: boolean;
-  // Aspect ratio of the frame, for example "4 / 3". The photo is cropped to fill it.
   ratio?: string;
+  fill?: boolean;
+  reveal?: "mask";
+  delay?: number;
+  parallax?: number;
+  transitionName?: string;
+  // Override the slot's focus point (CSS object-position) for this frame.
+  focus?: string;
 }
 
-const { name, sizes, widths = [480, 800, 1200, 1600], class: className, eager = false, ratio = "3 / 2" } = Astro.props;
+const {
+  name,
+  sizes,
+  widths = [480, 800, 1200, 1600],
+  class: className,
+  eager = false,
+  ratio = "3 / 2",
+  fill = false,
+  reveal,
+  delay = 0,
+  parallax,
+  transitionName,
+  focus,
+} = Astro.props;
 const photo = resolvePhoto(name);
 
 if (!photo.ready && import.meta.env.PROD) {
@@ -30,27 +56,43 @@ const image = photo.image;
 // Never ask for a size larger than the original file.
 const usableWidths = image ? widths.filter((w) => w <= image.width) : [];
 if (image && usableWidths.length === 0) usableWidths.push(image.width);
+
+const style = [
+  `--ratio: ${fill ? "auto" : ratio}`,
+  `--focus: ${focus ?? photo.slot.focus ?? "center"}`,
+  reveal ? `--delay: ${delay}ms` : "",
+  transitionName ? `view-transition-name: ${transitionName}` : "",
+]
+  .filter(Boolean)
+  .join("; ");
 ---
 
-<div class:list={["photo", className]} style={`--ratio: ${ratio}; --focus: ${photo.slot.focus ?? "center"}`}>
-  {
-    image ? (
-      <Picture
-        src={image}
-        formats={["avif", "webp"]}
-        widths={usableWidths}
-        sizes={sizes}
-        alt={photo.slot.alt}
-        loading={eager ? "eager" : "lazy"}
-        fetchpriority={eager ? "high" : "auto"}
-      />
-    ) : (
-      <div class="pending" role="img" aria-label={`Photo pending: ${photo.slot.subject}`}>
-        <span class="pending-tag">Photo pending · {name}</span>
-        <span class="pending-subject">{photo.slot.subject}</span>
-      </div>
-    )
-  }
+<div
+  class:list={["photo", className, { "is-fill": fill, "has-parallax": parallax }]}
+  style={style}
+  data-reveal={reveal}
+>
+  <div class="photo-inner" data-parallax={parallax}>
+    {
+      image ? (
+        <Picture
+          src={image}
+          formats={["avif", "webp"]}
+          widths={usableWidths}
+          sizes={sizes}
+          alt={photo.slot.alt}
+          loading={eager ? "eager" : "lazy"}
+          fetchpriority={eager ? "high" : "auto"}
+          decoding={eager ? "sync" : "async"}
+        />
+      ) : (
+        <div class="pending" role="img" aria-label={`Photo pending: ${photo.slot.subject}`}>
+          <span class="pending-tag">Photo pending · {name}</span>
+          <span class="pending-subject">{photo.slot.subject}</span>
+        </div>
+      )
+    }
+  </div>
   {image && !photo.ready && <span class="pending-badge">Dev only · {photo.missing.join(", ")} pending</span>}
 </div>
 
@@ -59,7 +101,21 @@ if (image && usableWidths.length === 0) usableWidths.push(image.width);
     position: relative;
     aspect-ratio: var(--ratio);
     overflow: hidden;
-    background: var(--color-sand);
+    background: color-mix(in srgb, var(--moss) 35%, var(--pine));
+  }
+
+  .photo.is-fill {
+    height: 100%;
+  }
+
+  .photo-inner {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Parallax photos are taller than their frame, so the drift never shows an edge. */
+  .has-parallax .photo-inner {
+    inset: -12% 0;
   }
 
   .photo :global(picture),
@@ -81,8 +137,9 @@ if (image && usableWidths.length === 0) usableWidths.push(image.width);
     gap: 0.5rem;
     height: 100%;
     padding: 1.5rem;
-    border: 2px dashed var(--color-raspberry);
-    color: var(--color-ink);
+    border: 2px dashed var(--raspberry);
+    background: var(--paper);
+    color: var(--pine);
     font-family: var(--font-body);
   }
 
@@ -91,7 +148,7 @@ if (image && usableWidths.length === 0) usableWidths.push(image.width);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-raspberry);
+    color: var(--raspberry);
   }
 
   .pending-subject {
@@ -104,8 +161,8 @@ if (image && usableWidths.length === 0) usableWidths.push(image.width);
     top: 0.5rem;
     left: 0.5rem;
     padding: 0.2rem 0.5rem;
-    background: var(--color-raspberry);
-    color: var(--color-paper);
+    background: var(--raspberry);
+    color: var(--paper);
     font-size: 0.75rem;
     font-weight: 600;
   }

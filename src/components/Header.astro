@@ -1,21 +1,32 @@
 ---
-import { hotel, nav } from "../content/hotel";
+// The site bar. It sits over the first screen of each page:
+// - tone="dark": pine text, for light photos and cream pages (default);
+// - tone="light": cream text, for dark photos.
+// Once the page scrolls, the bar gets a cream background and pine text.
+import { hotel, nav, conceptNotice } from "../content/hotel";
 
+interface Props {
+  tone?: "dark" | "light";
+}
+
+const { tone = "dark" } = Astro.props;
 const current = Astro.url.pathname;
+const isCurrent = (href: string) => current.startsWith(href);
 ---
 
-<header class="site-header">
-  <div class="container bar">
+<header class="site-header" data-tone={tone}>
+  <div class="bar container">
     <a class="brand" href="/" aria-current={current === "/" ? "page" : undefined}>
       <span class="brand-name">{hotel.shortName}</span>
       <span class="brand-sub">Mountain House</span>
     </a>
-    <nav aria-label="Main">
+
+    <nav class="nav" aria-label="Main">
       <ul>
         {
           nav.map((item) => (
             <li>
-              <a href={item.href} aria-current={current.startsWith(item.href) ? "page" : undefined}>
+              <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
                 {item.label}
               </a>
             </li>
@@ -23,82 +34,406 @@ const current = Astro.url.pathname;
         }
       </ul>
     </nav>
+
+    <button class="menu-button" type="button" data-menu-open aria-haspopup="dialog" aria-controls="site-menu" aria-expanded="false">
+      <span class="menu-label">Menu</span>
+      <span class="menu-icon" aria-hidden="true"><span></span><span></span></span>
+    </button>
   </div>
 </header>
 
+<dialog id="site-menu" class="menu tone-pine" aria-label="Menu">
+  <div class="menu-top container">
+    <a class="brand" href="/" data-menu-close>
+      <span class="brand-name">{hotel.shortName}</span>
+      <span class="brand-sub">Mountain House</span>
+    </a>
+    <button class="menu-close" type="button" data-menu-close>
+      Close <span class="close-icon" aria-hidden="true"></span>
+    </button>
+  </div>
+  <nav class="menu-nav container" aria-label="Menu">
+    <ol>
+      <li style="--i: 0">
+        <a href="/" aria-current={current === "/" ? "page" : undefined}>
+          <span class="menu-num">00</span><span class="menu-link">Home</span>
+        </a>
+      </li>
+      {
+        nav.map((item, i) => (
+          <li style={`--i: ${i + 1}`}>
+            <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+              <span class="menu-num">{String(i + 1).padStart(2, "0")}</span>
+              <span class="menu-link">{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+  <p class="menu-foot container">{conceptNotice.short} {hotel.region}.</p>
+</dialog>
+
+<script>
+  import "../scripts/header";
+</script>
+
 <style>
   .site-header {
-    border-bottom: 1px solid var(--color-rule);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--header-h);
+    color: var(--pine);
+    view-transition-name: site-header;
+    transition:
+      transform 500ms var(--ease-out),
+      background-color 400ms var(--ease),
+      color 400ms var(--ease),
+      box-shadow 400ms var(--ease);
+  }
+
+  .site-header[data-tone="light"] {
+    color: var(--cream);
+  }
+
+  .site-header[data-scrolled] {
+    color: var(--pine);
+    background: color-mix(in srgb, var(--cream) 88%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--pine) 12%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  }
+
+  .site-header[data-hidden] {
+    transform: translateY(-100%);
   }
 
   .bar {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 0.25rem var(--space-4);
-    padding-block: 0.85rem;
+    gap: var(--space-4);
+    height: 100%;
   }
 
   .brand {
-    display: flex;
+    display: inline-flex;
     align-items: baseline;
-    gap: 0.5rem;
-    color: var(--color-ink);
+    gap: 0.6rem;
+    color: inherit;
     text-decoration: none;
   }
 
   .brand-name {
     font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-size: 1.85rem;
+    font-weight: 400;
+    letter-spacing: -0.025em;
     line-height: 1;
   }
 
   .brand-sub {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--color-moss);
+    white-space: nowrap;
+    opacity: 0.8;
   }
 
-  ul {
+  /* In the open menu on phones, the name alone leaves room for Close. */
+  @media (max-width: 30rem) {
+    .menu .brand-sub {
+      display: none;
+    }
+  }
+
+  /* Desktop links: an underline draws in from the left. */
+  .nav ul {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0 var(--space-3);
+    gap: clamp(1.25rem, 2.6vw, 2.75rem);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  nav a {
+  .nav a {
+    position: relative;
     display: inline-block;
-    padding-block: 0.7rem; /* 44 px touch target */
-    color: var(--color-ink);
-    font-size: 0.9375rem;
-    font-weight: 500;
+    padding-block: 0.75rem;
+    color: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     text-decoration: none;
   }
 
-  nav a:hover,
-  nav a[aria-current="page"] {
-    text-decoration: underline;
-    text-decoration-color: var(--color-raspberry);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.4em;
+  .nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.45rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 500ms var(--ease-out);
   }
 
-  /* Phones: the four links sit on their own row under the name. */
-  @media (max-width: 44rem) {
-    nav {
-      width: 100%;
+  .nav a:hover::after,
+  .nav a:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Current page: the raspberry dot. */
+  .nav a[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: -0.85rem;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    margin-top: -2.5px;
+    border-radius: 50%;
+    background: var(--raspberry);
+  }
+
+  .site-header[data-tone="light"]:not([data-scrolled]) .nav a[aria-current="page"]::before {
+    background: var(--blush);
+  }
+
+  .menu-button {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .menu-icon {
+    display: grid;
+    gap: 6px;
+    width: 26px;
+  }
+
+  .menu-icon span {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 400ms var(--ease-out);
+  }
+
+  .menu-icon span:last-child {
+    width: 70%;
+    justify-self: end;
+  }
+
+  .menu-button:hover .menu-icon span:last-child {
+    transform: scaleX(1.43);
+    transform-origin: right;
+  }
+
+  @media (max-width: 59.99rem) {
+    .nav {
+      display: none;
     }
 
-    ul {
-      justify-content: space-between;
-      gap: 0 var(--space-2);
+    .menu-button {
+      display: inline-flex;
+    }
+  }
+
+  /* Small phones: tighter label so name, label and Menu share one line. */
+  @media (max-width: 30rem) {
+    .bar {
+      gap: var(--space-2);
+    }
+
+    .brand-sub {
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+    }
+  }
+
+  @media (max-width: 22.5rem) {
+    .site-header .brand-sub {
+      display: none;
+    }
+  }
+
+  /* ---------- Phone menu ---------- */
+
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--pine);
+    color: var(--cream);
+    overflow-y: auto;
+  }
+
+  .menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu::backdrop {
+    background: transparent;
+  }
+
+  .menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-h);
+  }
+
+  .menu-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .close-icon {
+    position: relative;
+    width: 22px;
+    height: 22px;
+  }
+
+  .close-icon::before,
+  .close-icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  .close-icon::after {
+    transform: rotate(-45deg);
+  }
+
+  .menu-nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-nav ol {
+    width: 100%;
+    margin: 0;
+    padding: var(--space-4) 0;
+    list-style: none;
+  }
+
+  .menu-nav li {
+    border-bottom: 1px solid color-mix(in srgb, var(--cream) 16%, transparent);
+  }
+
+  .menu-nav a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-block: 0.9rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .menu-num {
+    min-width: 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .menu-link {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 10vw, 3.75rem);
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .menu-nav a[aria-current="page"] .menu-link {
+    font-style: italic;
+  }
+
+  .menu-foot {
+    padding-block: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--lichen);
+  }
+
+  /* Opening: the panel slides down, links rise in turn. */
+  @media (prefers-reduced-motion: no-preference) {
+    .menu[open] {
+      animation: menu-in 600ms var(--ease-out) both;
+    }
+
+    .menu[open] li {
+      animation: link-in 800ms var(--ease-out) both;
+      animation-delay: calc(150ms + var(--i) * 60ms);
+    }
+
+    .menu[data-closing] {
+      animation: menu-out 380ms var(--ease-in-out) both;
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes menu-out {
+    from {
+      clip-path: inset(0 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  @keyframes link-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
     }
   }
 </style>

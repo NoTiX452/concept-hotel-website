@@ -1,204 +1,832 @@
 ---
+// The homepage is a walk from the open meadow into the forest: cream
+// sections first, then forest green, pine, and the night-dark footer.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Photo from "../components/Photo.astro";
-import RoomCard from "../components/RoomCard.astro";
+import Split from "../components/Split.astro";
+import RoomIndex from "../components/RoomIndex.astro";
 import PriceNote from "../components/PriceNote.astro";
-import { hotel, house, rooms, dining, area, gettingHere } from "../content/hotel";
+import Ridge from "../components/Ridge.astro";
+import { hotel, house, home, rooms, dining, area, gettingHere } from "../content/hotel";
+
+const introWords = hotel.intro.split(" ");
+const numeral = ["I", "II", "III", "IV", "V"];
 ---
 
 <BaseLayout>
-  <section class="hero container" aria-labelledby="hero-title">
-    <span class="eyebrow">{hotel.region} · {hotel.rooms} rooms</span>
-    <h1 id="hero-title">Where the meadow meets <em>the fir forest.</em></h1>
-    <p class="lede">{hotel.intro}</p>
-  </section>
-
-  <figure class="hero-photo">
-    <Photo name="hero" ratio="21 / 9" sizes="100vw" widths={[640, 1024, 1600, 2400]} eager />
-    <figcaption class="container">{hotel.meaning}</figcaption>
-  </figure>
-
-  <section class="house container" aria-labelledby="house-title" data-reveal>
-    <Photo name="house" ratio="4 / 5" sizes="(min-width: 60rem) 40vw, 100vw" class="house-photo" />
-    <div class="house-text">
-      <span class="eyebrow">The house</span>
-      <h2 id="house-title">{house.heading}</h2>
-      {house.text.map((paragraph) => <p>{paragraph}</p>)}
+  <!-- Opening: the valley at full size, the line set over the forest. -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-media">
+      <Photo
+        name="hero"
+        fill
+        eager
+        sizes="(orientation: portrait) 140vh, 100vw"
+        widths={[640, 1024, 1600, 2400]}
+        parallax={0.22}
+        focus="center 42%"
+      />
     </div>
-  </section>
-
-  <section class="rooms container" aria-labelledby="rooms-title" data-reveal>
-    <div class="section-head">
-      <span class="eyebrow">Rooms</span>
-      <h2 id="rooms-title">Twelve rooms, four kinds.</h2>
-      <p class="lede">Every room has wooden floors, wool blankets and a window onto either the meadow or the forest.</p>
-    </div>
-    <ul class="room-grid">
-      {
-        rooms.map((room) => (
-          <li>
-            <RoomCard room={room} />
-          </li>
-        ))
-      }
-    </ul>
-    <PriceNote />
-  </section>
-
-  <section class="dining on-pine" aria-labelledby="dining-title">
-    <div class="container dining-inner" data-reveal>
-      <div class="dining-text">
-        <span class="eyebrow">Dining</span>
-        <h2 id="dining-title">{dining.heading}</h2>
-        <p class="lede">{dining.intro}</p>
-        <a class="button" href="/dining/">Breakfast and dinner <span aria-hidden="true">→</span></a>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-content container">
+      <p class="hero-meta">
+        <span>{hotel.region}</span>
+        <span>{hotel.rooms} rooms</span>
+      </p>
+      <Split as="h1" id="hero-title" class="hero-title" text={home.hero.heading} delay={300} />
+      <div class="hero-foot">
+        <p class="hero-meaning">{hotel.meaning}</p>
+        <a class="scroll-cue" href="#intro">
+          <span>{home.hero.scroll}</span>
+          <span class="cue-line" aria-hidden="true"></span>
+        </a>
       </div>
-      <Photo name="dining-breakfast" ratio="4 / 5" sizes="(min-width: 60rem) 40vw, 100vw" class="dining-photo" />
     </div>
   </section>
 
-  <section class="area container" aria-labelledby="area-title" data-reveal>
-    <div class="section-head">
-      <span class="eyebrow">The area</span>
-      <h2 id="area-title">{area.heading}</h2>
-      <p class="lede">{area.intro}</p>
+  <!-- The promise, read word by word as it scrolls past. -->
+  <section id="intro" class="intro tone-cream section" aria-label="About the house">
+    <div class="container intro-grid">
+      <p class="intro-side" data-reveal>
+        <span class="berry" aria-hidden="true"></span>
+        {hotel.shortName} · {hotel.region}
+      </p>
+      <p class="statement intro-text">
+        {introWords.map((word) => <span class="hl">{word} </span>)}
+      </p>
     </div>
-    <ul class="place-grid">
+    <ul class="container figures">
       {
-        area.places.map((place) => (
-          <li class="place">
-            <Photo name={place.photo} ratio="1 / 1" sizes="(min-width: 60rem) 25vw, (min-width: 40rem) 50vw, 100vw" />
-            <h3>{place.name}</h3>
+        home.figures.map((figure, i) => (
+          <li data-reveal style={`--delay: ${i * 120}ms`}>
+            <span class="figure-value">{figure.value}</span>
+            <span class="figure-label">{figure.label}</span>
           </li>
         ))
       }
     </ul>
-    <p class="photo-note">{area.photoNote}</p>
-    <a class="button" href="/the-area/">What to do nearby <span aria-hidden="true">→</span></a>
   </section>
 
-  <section class="arrive container" aria-labelledby="arrive-title" data-reveal>
-    <Photo name={gettingHere.photo} ratio="16 / 9" sizes="(min-width: 60rem) 55vw, 100vw" class="arrive-photo" />
-    <div class="arrive-text">
-      <span class="eyebrow">Getting here</span>
-      <h2 id="arrive-title">{gettingHere.heading}</h2>
-      <p>Two airports, one mountain road, and parking beside the house.</p>
-      <a class="button" href="/getting-here/">Plan the journey <span aria-hidden="true">→</span></a>
+  <!-- I. The house: a tall photograph with a window-view laid over it. -->
+  <section class="house tone-paper section" aria-labelledby="house-title">
+    <div class="container house-grid">
+      <div class="house-text">
+        <span class="eyebrow"><span class="num">{numeral[0]}</span>{home.chapters.house}</span>
+        <Split id="house-title" text={house.heading} />
+        {house.text.map((paragraph) => <p class="house-p" data-reveal>{paragraph}</p>)}
+        <blockquote class="house-aside" data-reveal>
+          <p>{house.aside}</p>
+        </blockquote>
+      </div>
+      <div class="house-media">
+        <Photo
+          name="house"
+          ratio="4 / 5"
+          sizes="(min-width: 60rem) 45vw, 100vw"
+          widths={[640, 960, 1280, 1600]}
+          reveal="mask"
+          parallax={0.08}
+          class="house-main"
+          focus="center 60%"
+        />
+        <Photo
+          name="room-forest"
+          ratio="3 / 4"
+          sizes="(min-width: 60rem) 16vw, 40vw"
+          widths={[320, 480, 640]}
+          reveal="mask"
+          delay={250}
+          class="house-inset"
+        />
+      </div>
+    </div>
+    <Ridge class="container house-ridge" />
+  </section>
+
+  <!-- II. Rooms: the index. -->
+  <section class="rooms tone-cream section" aria-labelledby="rooms-title">
+    <div class="container">
+      <header class="rooms-head">
+        <div>
+          <span class="eyebrow"><span class="num">{numeral[1]}</span>{home.chapters.rooms}</span>
+          <Split id="rooms-title" text={home.rooms.heading} />
+        </div>
+        <p class="lede" data-reveal>{home.rooms.lede}</p>
+      </header>
+      <RoomIndex rooms={rooms} />
+      <div class="rooms-foot">
+        <PriceNote />
+        <a class="link-arrow" href="/rooms/">All rooms compared <span class="line" aria-hidden="true"></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- III. The table: two meals, two times of day, layered. -->
+  <section class="dining tone-forest section" aria-labelledby="dining-title">
+    <div class="container">
+      <header class="dining-head">
+        <span class="eyebrow"><span class="num">{numeral[2]}</span>{home.chapters.dining}</span>
+        <Split id="dining-title" text={dining.heading} />
+        <p class="lede" data-reveal>{dining.intro}</p>
+      </header>
+      <div class="meals">
+        {
+          dining.meals.map((meal, i) => (
+            <article class:list={["meal", `meal-${i}`]}>
+              <p class="meal-time" aria-hidden="true" data-reveal>
+                {meal.time.slice(0, 5)}
+              </p>
+              <Photo
+                name={meal.photo}
+                ratio={i === 0 ? "3 / 2" : "4 / 5"}
+                sizes={i === 0 ? "(min-width: 60rem) 55vw, 100vw" : "(min-width: 60rem) 32vw, 100vw"}
+                widths={[480, 800, 1200, 1600]}
+                reveal="mask"
+                parallax={i === 0 ? 0.06 : 0.1}
+              />
+              <div class="meal-text" data-reveal>
+                <h3>
+                  {meal.name} <span class="meal-hours">{meal.time}</span>
+                </h3>
+                <p>{meal.text}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+      <a class="link-arrow dining-link" href="/dining/">Breakfast, dinner and a sample menu <span class="line" aria-hidden="true"></span></a>
+    </div>
+  </section>
+
+  <!-- IV. The mountains: a rail of places you scroll sideways. -->
+  <section class="area tone-pine section" aria-labelledby="area-title">
+    <div class="container area-head">
+      <div>
+        <span class="eyebrow"><span class="num">{numeral[3]}</span>{home.chapters.area}</span>
+        <Split id="area-title" text={area.heading} />
+      </div>
+      <p class="lede" data-reveal>{area.intro}</p>
+    </div>
+
+    <!-- The rail reveals as one piece: cards off to the side would never be "in view". -->
+    <div class="rail-wrap" data-reveal>
+      <ul class="rail" data-rail tabindex="0" aria-label="Places in the Apuseni Mountains">
+        {
+          area.places.map((place, i) => (
+            <li class="place">
+              <Photo
+                name={place.photo}
+                ratio="3 / 4"
+                sizes="(min-width: 60rem) 28vw, 78vw"
+                widths={[400, 640, 960]}
+              />
+              <span class="place-num">{String(i + 1).padStart(2, "0")}</span>
+              <h3>{place.name}</h3>
+              <p>{place.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="container area-foot">
+      <p class="small-note">{area.photoNote}</p>
+      <div class="rail-controls">
+        <button type="button" class="rail-button" data-rail-prev aria-label="Previous place">
+          <span aria-hidden="true">←</span>
+        </button>
+        <button type="button" class="rail-button" data-rail-next aria-label="Next place">
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <a class="link-arrow" href="/the-area/">What to do nearby <span class="line" aria-hidden="true"></span></a>
+    </div>
+  </section>
+
+  <!-- V. The road up: the frame opens to full width as you arrive. -->
+  <section class="arrive tone-pine" aria-labelledby="arrive-title">
+    <div class="arrive-frame">
+      <Photo name={gettingHere.photo} fill sizes="100vw" widths={[640, 1024, 1600, 2400]} parallax={0.12} focus="center 70%" />
+      <div class="arrive-shade" aria-hidden="true"></div>
+      <div class="arrive-text container">
+        <span class="eyebrow"><span class="num">{numeral[4]}</span>{home.chapters.arrive}</span>
+        <Split id="arrive-title" text={gettingHere.heading} class="arrive-title" />
+        <p class="arrive-p" data-reveal>{home.arrive.text}</p>
+        <a class="button" href="/getting-here/" data-reveal>{home.arrive.cta} <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
+<script>
+  // The places rail: the buttons scroll by one card; each disables at its end.
+  const rail = document.querySelector<HTMLElement>("[data-rail]");
+  const prev = document.querySelector<HTMLButtonElement>("[data-rail-prev]");
+  const next = document.querySelector<HTMLButtonElement>("[data-rail-next]");
+  if (rail && prev && next) {
+    const step = () => (rail.querySelector("li")?.getBoundingClientRect().width ?? 300) + 24;
+    const smooth = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    prev.addEventListener("click", () => rail.scrollBy({ left: -step(), behavior: smooth }));
+    next.addEventListener("click", () => rail.scrollBy({ left: step(), behavior: smooth }));
+    const update = () => {
+      prev.disabled = rail.scrollLeft <= 4;
+      next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+    };
+    rail.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  }
+</script>
+
 <style>
+  /* ---------- Hero ---------- */
+
   .hero {
-    padding-block: clamp(3rem, 9vw, 7rem) var(--space-6);
+    position: relative;
+    display: flex;
+    min-height: max(36rem, calc(100svh - 2rem));
+    margin-top: calc(-1 * var(--header-h));
+    color: var(--cream);
+    overflow: hidden;
   }
 
-  .hero h1 {
-    max-width: 14ch;
+  .hero-media {
+    position: absolute;
+    inset: 0;
   }
 
-  .hero em {
-    font-style: italic;
-    color: var(--color-raspberry);
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-media :global(img) {
+      animation: settle 2600ms var(--ease-out) both;
+    }
   }
 
-  .hero-photo {
+  @keyframes settle {
+    from {
+      transform: scale(1.14);
+    }
+  }
+
+  /* Pine rises from the foot of the photo so the cream type reads over the forest. */
+  .hero-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, color-mix(in srgb, var(--pine) 88%, transparent) 0%, color-mix(in srgb, var(--pine) 45%, transparent) 38%, transparent 62%),
+      linear-gradient(to bottom, color-mix(in srgb, var(--cream) 28%, transparent), transparent 22%);
+  }
+
+  .hero-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-4);
+    padding-top: calc(var(--header-h) + var(--space-6));
+    padding-bottom: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem var(--space-3);
+    white-space: nowrap;
     margin: 0;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
   }
 
-  figcaption {
-    padding-top: var(--space-1);
+  .hero-meta span + span::before {
+    content: "";
+    display: inline-block;
+    width: 1.5rem;
+    height: 1px;
+    margin-right: var(--space-3);
+    vertical-align: middle;
+    background: currentColor;
+  }
+
+  .hero :global(.hero-title) {
+    max-width: 12ch;
+    margin: 0;
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+  }
+
+  .hero-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    padding-top: var(--space-3);
+    border-top: 1px solid color-mix(in srgb, var(--cream) 35%, transparent);
+  }
+
+  .hero-meaning {
+    max-width: 38ch;
+    margin: 0;
     font-size: var(--text-sm);
-    color: var(--color-moss);
+    color: color-mix(in srgb, var(--cream) 88%, transparent);
   }
 
-  .section-head {
-    margin-bottom: var(--space-6);
+  .scroll-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    color: inherit;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
   }
 
-  .house {
+  .cue-line {
+    position: relative;
+    width: 1px;
+    height: 2.75rem;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--cream) 30%, transparent);
+  }
+
+  .cue-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--cream);
+    transform: translateY(-100%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cue-line::after {
+      animation: cue 2400ms var(--ease-in-out) 1800ms infinite;
+    }
+  }
+
+  @keyframes cue {
+    0% {
+      transform: translateY(-100%);
+    }
+    50% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(100%);
+    }
+  }
+
+  /* ---------- Intro ---------- */
+
+  .intro-grid {
     display: grid;
     gap: var(--space-4);
-    align-items: center;
-    padding-top: var(--section);
   }
 
   @media (min-width: 60rem) {
-    .house {
-      grid-template-columns: 1fr 1.1fr;
+    .intro-grid {
+      grid-template-columns: 1fr 3fr;
       gap: var(--space-8);
     }
   }
 
-  .house-text p {
-    max-width: 46ch;
-    font-size: var(--text-lg);
+  .intro-side {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
   }
 
-  .photo-note {
-    font-size: var(--text-sm);
-    color: var(--color-moss);
+  .intro-side .berry {
+    margin-right: 0.6rem;
   }
 
-  .rooms,
-  .area,
-  .arrive {
-    padding-top: var(--section);
+  .intro-text {
+    max-width: 30ch;
+    margin: 0;
   }
 
-  .room-grid,
-  .place-grid {
+  /* Each word darkens from moss to pine as the reader reaches it. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hl {
+        animation: ink linear both;
+        animation-timeline: view();
+        animation-range: entry 60% cover 42%;
+      }
+    }
+  }
+
+  @keyframes ink {
+    from {
+      color: color-mix(in srgb, var(--pine) 22%, var(--cream));
+    }
+    to {
+      color: var(--pine);
+    }
+  }
+
+  .figures {
     display: grid;
-    gap: var(--space-6) var(--space-4);
-    margin: 0 0 var(--space-4);
+    gap: var(--space-4);
+    margin-top: var(--space-12);
     padding: 0;
     list-style: none;
   }
 
-  @media (min-width: 40rem) {
-    .room-grid,
-    .place-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 44rem) {
+    .figures {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
-  @media (min-width: 64rem) {
-    .place-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+  .figures li {
+    display: grid;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  .figure-value {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 2rem + 6vw, 8rem);
+    font-weight: 250;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+  }
+
+  .figure-label {
+    font-size: var(--text-sm);
+    color: var(--fg-soft);
+  }
+
+  /* ---------- House ---------- */
+
+  .house-grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .house-grid {
+      grid-template-columns: 5fr 1fr 6fr;
+      align-items: center;
     }
+
+    .house-media {
+      grid-column: 3;
+    }
+  }
+
+  .house-p {
+    max-width: 40ch;
+    font-size: var(--text-lg);
+    color: var(--fg-soft);
+  }
+
+  .house-aside {
+    max-width: 28ch;
+    margin: var(--space-6) 0 0;
+    padding-left: var(--space-3);
+    border-left: 1px solid var(--accent);
+  }
+
+  .house-aside p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.2;
+  }
+
+  .house-media {
+    position: relative;
+    padding-bottom: var(--space-8);
+  }
+
+  .house-media :global(.house-main) {
+    width: 88%;
+    margin-left: auto;
+  }
+
+  .house-media :global(.house-inset) {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 38%;
+    box-shadow: 0 0 0 clamp(6px, 0.8vw, 12px) var(--paper);
+  }
+
+  .house :global(.house-ridge) {
+    margin-top: var(--space-12);
+    color: var(--moss);
+  }
+
+  /* ---------- Rooms ---------- */
+
+  .rooms-head {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .rooms-head {
+      grid-template-columns: 1.25fr 1fr;
+      gap: clamp(3rem, 6vw, 7rem);
+      align-items: end;
+    }
+
+    .rooms-head .lede {
+      margin-bottom: var(--space-2);
+    }
+  }
+
+  .rooms-head :global(h2) {
+    margin: 0;
+  }
+
+  .rooms-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  /* ---------- Dining ---------- */
+
+  .dining-head {
+    max-width: 52rem;
+    margin-bottom: var(--space-12);
+  }
+
+  .meals {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  .meal {
+    position: relative;
+  }
+
+  .meal-time {
+    margin: 0 0 -0.32em;
+    font-family: var(--font-display);
+    font-size: clamp(4.5rem, 2rem + 11vw, 13rem);
+    font-weight: 200;
+    font-style: italic;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--blush);
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .meal-text {
+    max-width: 40ch;
+    margin-top: var(--space-3);
+  }
+
+  .meal-text h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem var(--space-2);
+  }
+
+  .meal-hours {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+  }
+
+  .meal-text p {
+    color: var(--fg-soft);
+  }
+
+  @media (min-width: 60rem) {
+    .meals {
+      grid-template-columns: 7fr 1fr 4fr;
+      gap: 0;
+      align-items: start;
+    }
+
+    .meal-0 {
+      grid-column: 1;
+    }
+
+    .meal-1 {
+      grid-column: 3;
+      margin-top: clamp(8rem, 18vw, 20rem);
+    }
+
+    .meal-1 .meal-time {
+      text-align: right;
+    }
+  }
+
+  .dining-link {
+    margin-top: var(--space-8);
+  }
+
+  /* ---------- Area ---------- */
+
+  .area-head {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+  }
+
+  @media (min-width: 60rem) {
+    .area-head {
+      grid-template-columns: 1.25fr 1fr;
+      gap: clamp(3rem, 6vw, 7rem);
+      align-items: end;
+    }
+  }
+
+  .area-head :global(h2) {
+    margin: 0;
+  }
+
+  /* The rail starts at the content edge and runs off the right of the screen. */
+  .rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(78vw, 26rem);
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0 var(--gutter) var(--space-3);
+    padding-left: max(var(--gutter), (100vw - var(--max-width)) / 2);
+    scroll-padding-left: max(var(--gutter), (100vw - var(--max-width)) / 2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    /* proximity, not mandatory: the last card can always be scrolled fully into view. */
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: var(--moss) transparent;
+    list-style: none;
+  }
+
+  .rail:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .place {
+    scroll-snap-align: start;
+  }
+
+  .place :global(.photo img) {
+    transition: transform 1200ms var(--ease-out);
+  }
+
+  .place:hover :global(.photo img) {
+    transform: scale(1.05);
+  }
+
+  .place-num {
+    display: block;
+    margin-top: var(--space-2);
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--accent);
   }
 
   .place h3 {
-    margin-top: var(--space-2);
+    margin: 0.25rem 0 var(--space-1);
   }
 
-  .dining {
-    margin-top: var(--section);
-    padding-block: var(--section);
+  .place p {
+    font-size: var(--text-sm);
+    color: var(--fg-soft);
   }
 
-  .dining-inner {
-    display: grid;
-    gap: var(--space-6);
+  .area-foot {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
   }
 
-  @media (min-width: 60rem) {
-    .dining-inner {
-      grid-template-columns: 1.1fr 1fr;
-    }
+  .area-foot .small-note {
+    margin: 0;
   }
+
+  .rail-controls {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .rail-button {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: none;
+    color: var(--fg);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition:
+      background-color 400ms var(--ease),
+      color 400ms var(--ease),
+      border-color 400ms var(--ease);
+  }
+
+  .rail-button:hover:not(:disabled) {
+    background: var(--cream);
+    border-color: var(--cream);
+    color: var(--pine);
+  }
+
+  .rail-button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  /* ---------- Arrive ---------- */
 
   .arrive {
-    display: grid;
-    gap: var(--space-4);
-    align-items: center;
+    padding-bottom: var(--section);
   }
 
-  @media (min-width: 60rem) {
-    .arrive {
-      grid-template-columns: 1.4fr 1fr;
-      gap: var(--space-8);
+  .arrive-frame {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: min(92svh, 60rem);
+    overflow: hidden;
+    color: var(--cream);
+  }
+
+  .arrive-frame > :global(.photo) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .arrive-shade {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 55%, color-mix(in srgb, var(--pine) 78%, transparent), color-mix(in srgb, var(--pine) 35%, transparent) 70%);
+  }
+
+  /* The frame opens from an inset window to the full width as it scrolls in. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .arrive-frame {
+        animation: open-frame linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 45%;
+      }
     }
+  }
+
+  @keyframes open-frame {
+    from {
+      clip-path: inset(6% 12% 6% 12% round 4px);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 0);
+    }
+  }
+
+  .arrive-text {
+    position: relative;
+    padding-block: var(--space-12);
+  }
+
+  .arrive :global(.arrive-title) {
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+  }
+
+  .arrive-p {
+    max-width: 32ch;
+    font-size: var(--text-lg);
+  }
+
+  .arrive .button {
+    margin-top: var(--space-3);
+  }
+
+  .arrive .eyebrow {
+    color: var(--cream);
   }
 </style>

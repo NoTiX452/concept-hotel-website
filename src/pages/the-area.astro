@@ -1,71 +1,236 @@
 ---
+// The area: a field guide. Each place fills the screen and the next one
+// slides over it as you scroll (CSS position: sticky, no scroll hijacking).
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageIntro from "../components/PageIntro.astro";
 import Photo from "../components/Photo.astro";
+import Split from "../components/Split.astro";
 import { area } from "../content/hotel";
+
+const pad = (n: number) => String(n).padStart(2, "0");
+// Where each photo's subject sits, so the text never covers it.
+const focus = ["center 40%", "center 55%", "center 45%", "center 70%"];
+// A landscape photo filling a tall phone screen is cropped from its middle, so
+// the browser needs a file sized to the screen height, not its width.
+const landscape = [false, true, true, false];
 ---
 
-<BaseLayout title="The area" description={area.intro}>
-  <PageIntro eyebrow="The area" heading={area.heading} lede={area.intro}>
-    <p class="photo-note">
-      {area.photoNote} <a href="/credits/">About the photos</a>.
-    </p>
-  </PageIntro>
+<BaseLayout title="The area" description={area.intro} headerTone="light">
+  <header class="intro tone-pine">
+    <div class="container intro-inner">
+      <span class="eyebrow"><span class="num">IV</span>The Apuseni Mountains</span>
+      <Split as="h1" text={area.heading} delay={100} />
+      <div class="intro-foot">
+        <p class="lede" data-reveal style="--delay: 350ms">{area.intro}</p>
+        <ol class="toc" data-reveal style="--delay: 500ms" aria-label="On this page">
+          {
+            area.places.map((place, i) => (
+              <li>
+                <a href={`#place-${i}`}>
+                  <span>{pad(i + 1)}</span> {place.name}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <p class="small-note photo-note">
+        {area.photoNote} <a href="/credits/">About the photos</a>.
+      </p>
+    </div>
+  </header>
 
-  <div class="container places">
+  <div class="chapters">
     {
       area.places.map((place, i) => (
-        <section class:list={["place", { flip: i % 2 === 1 }]} aria-labelledby={`place-${i}`} data-reveal>
-          <Photo name={place.photo} ratio="3 / 2" sizes="(min-width: 60rem) 55vw, 100vw" />
-          <div class="place-text">
-            <span class="eyebrow">{String(i + 1).padStart(2, "0")}</span>
-            <h2 id={`place-${i}`}>{place.name}</h2>
-            <p>{place.text}</p>
+        <section class="chapter tone-night" id={`place-${i}`} aria-labelledby={`place-title-${i}`}>
+          <Photo
+            name={place.photo}
+            fill
+            sizes={landscape[i] ? "(orientation: portrait) 150vh, 100vw" : "100vw"}
+            widths={[640, 1024, 1600, 2400]}
+            focus={focus[i]}
+            class="chapter-photo"
+          />
+          <div class="chapter-shade" aria-hidden="true" />
+          <div class="container chapter-text">
+            <p class="chapter-count" data-reveal>
+              <span>{pad(i + 1)}</span> / {pad(area.places.length)}
+            </p>
+            <h2 id={`place-title-${i}`} data-reveal style="--delay: 100ms">
+              {place.name}
+            </h2>
+            <p class="chapter-p" data-reveal style="--delay: 200ms">
+              {place.text}
+            </p>
           </div>
         </section>
       ))
     }
-    <p class="note">{area.note}</p>
   </div>
+
+  <section class="before tone-cream section" aria-labelledby="before-title">
+    <div class="container before-grid">
+      <h2 id="before-title" data-reveal>Before you <em>set out.</em></h2>
+      <div data-reveal style="--delay: 150ms">
+        <p class="statement before-text">{area.note}</p>
+        <a class="link-arrow" href="/getting-here/">How to get to the mountains <span class="line" aria-hidden="true"></span></a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .photo-note {
-    font-size: var(--text-sm);
-    color: var(--color-moss);
+  .intro {
+    margin-top: calc(-1 * var(--header-h));
+    padding-block: calc(var(--header-h) + clamp(3rem, 8vw, 7rem)) var(--section);
   }
 
-  .places {
-    display: grid;
-    gap: var(--section);
+  .intro :global(h1) {
+    max-width: 11ch;
+    font-size: var(--text-hero);
+    font-weight: 260;
+    letter-spacing: -0.045em;
+    line-height: 0.9;
   }
 
-  .place {
+  .intro-foot {
     display: grid;
-    gap: var(--space-4);
-    align-items: end;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--rule);
   }
 
   @media (min-width: 60rem) {
-    .place {
-      grid-template-columns: 1.3fr 1fr;
-      gap: var(--space-8);
-    }
-
-    .flip :global(.photo) {
-      order: 2;
+    .intro-foot {
+      grid-template-columns: 1fr 1fr;
     }
   }
 
-  .place-text p {
+  .toc {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc a {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    padding-block: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    text-decoration: none;
+    transition: padding-left 500ms var(--ease-out);
+  }
+
+  .toc a:hover,
+  .toc a:focus-visible {
+    padding-left: 0.75rem;
+  }
+
+  .toc span {
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .photo-note {
+    margin-top: var(--space-6);
+  }
+
+  /* ---------- Chapters ---------- */
+
+  .chapter {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: flex-end;
+    height: 100svh;
+    min-height: 34rem;
+    overflow: hidden;
+  }
+
+  .chapter > :global(.chapter-photo) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .chapter-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--night) 92%, transparent) 0%,
+      color-mix(in srgb, var(--night) 55%, transparent) 35%,
+      transparent 65%
+    );
+  }
+
+  /* As a chapter scrolls in, its photo eases from a slight zoom. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .chapter :global(.chapter-photo img) {
+        animation: ease-in-photo linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 100%;
+      }
+    }
+  }
+
+  @keyframes ease-in-photo {
+    from {
+      transform: scale(1.15);
+    }
+  }
+
+  .chapter-text {
+    position: relative;
+    padding-bottom: clamp(2.5rem, 8vh, 6rem);
+  }
+
+  .chapter-count {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--lichen);
+  }
+
+  .chapter-count span {
+    color: var(--blush);
+  }
+
+  .chapter h2 {
+    max-width: 14ch;
+    font-size: var(--text-3xl);
+    font-weight: 270;
+  }
+
+  .chapter-p {
     max-width: 44ch;
     font-size: var(--text-lg);
+    color: color-mix(in srgb, var(--cream) 90%, transparent);
   }
 
-  .note {
-    max-width: var(--measure);
-    padding: var(--space-3) var(--space-4);
-    border-left: 3px solid var(--color-raspberry);
-    background: var(--color-sand);
+  /* ---------- Before you set out ---------- */
+
+  .before {
+    position: relative;
+  }
+
+  .before-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 60rem) {
+    .before-grid {
+      grid-template-columns: 1fr 1.4fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .before-text {
+    max-width: 30ch;
   }
 </style>

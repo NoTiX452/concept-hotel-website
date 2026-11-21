@@ -18,7 +18,7 @@ export const hotel = {
   rooms: 12,
   tagline: "Twelve rooms where the meadow meets the fir forest.",
   intro:
-    "A small wooden hotel high in the Apuseni Mountains. Twelve rooms, one kitchen, and the forest a few steps from the door. Come for the caves and the plateaus, stay for the quiet.",
+    "A small wooden hotel high in the Apuseni Mountains. Twelve rooms, one kitchen, and the forest a few steps from the door. Come for the caves and the plateaus; stay for the quiet.",
   author: "Nedelcu Valentin",
   repo: "https://github.com/NoTiX452/concept-hotel-website",
 } as const;
@@ -124,7 +124,7 @@ export const rooms: Room[] = [
 ];
 
 export const dining = {
-  heading: "One kitchen, one table at a time.",
+  heading: "One kitchen, *one table* at a time.",
   intro:
     "There is no menu to study. Breakfast is laid out every morning, and dinner is one set menu, cooked for whoever is staying that night.",
   meals: [
@@ -155,7 +155,7 @@ export const dining = {
 
 // Real places in the Apuseni Mountains. General facts only.
 export const area = {
-  heading: "The mountains around the house.",
+  heading: "Limestone, ice, and *long walks.*",
   intro:
     "The Apuseni are low, green mountains full of limestone: caves, sinkholes and gorges, with villages spread along the valleys. Much of the area is protected as the Apuseni Natural Park.",
   places: [
@@ -186,15 +186,45 @@ export const area = {
 };
 
 export const house = {
-  heading: "Built of wood, kept small.",
+  heading: "Built of wood, *kept small.*",
   text: [
-    "Three floors of fir and larch, a long kitchen table, and a porch facing the meadow. Small enough that we learn your name by the second morning.",
+    "Three floors of fir and larch, a long kitchen table, and a porch facing the meadow.",
     "The house sits where the meadow ends and the forest begins, so every window looks onto one or the other.",
   ],
+  aside: "Small enough that we learn your name by the second morning.",
+};
+
+// Homepage copy. Headings may mark an italic phrase with *asterisks*.
+// Figures repeat facts stated elsewhere in this file; they add none.
+export const home = {
+  hero: {
+    heading: "Where the meadow meets *the fir forest.*",
+    scroll: "Scroll to walk in",
+  },
+  figures: [
+    { value: "03", label: "floors of fir and larch" },
+    { value: "12", label: "rooms in four kinds" },
+    { value: "01", label: "kitchen and one long table" },
+  ],
+  chapters: {
+    house: "The house",
+    rooms: "Rooms",
+    dining: "The table",
+    area: "The mountains",
+    arrive: "The road up",
+  },
+  rooms: {
+    heading: "Twelve rooms, *four kinds.*",
+    lede: "Every room has wooden floors, wool blankets, and a window onto either the meadow or the forest.",
+  },
+  arrive: {
+    text: "Two airports, one mountain road, and parking beside the house.",
+    cta: "Plan the journey",
+  },
 };
 
 export const gettingHere = {
-  heading: "The road up.",
+  heading: "The road *up.*",
   intro:
     "Zmeuriș is made up, so there is no address. If it were real, this is how the page would help you get here.",
   steps: [
