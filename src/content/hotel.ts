@@ -26,7 +26,7 @@ export const hotel = {
 // Shown on every page. The wording must make it impossible to mistake this for a real hotel.
 export const conceptNotice = {
   short: "Concept project. Zmeuriș is not a real hotel.",
-  long: "Zmeuriș Mountain House is a made-up hotel, designed and built by Nedelcu Valentin as a portfolio concept. The rooms, prices and menus are fiction, and nothing here can be booked. The mountains are real.",
+  long: "Zmeuriș Mountain House is a made-up hotel, designed and built by Nedelcu Valentin as a portfolio concept. The rooms, prices and menus are fiction, and a stay requested here is never a real booking. The mountains are real.",
 };
 
 export const nav = [
@@ -37,10 +37,39 @@ export const nav = [
 ] as const;
 
 // The concept booking app (NoTiX452/concept-booking-app), a separate project
-// for the same made-up hotel. Its room types match the rooms below.
-// Check this address after the app is deployed.
+// for the same made-up hotel, used by reception. Guests request a stay on this
+// site's /book/ page; the request reaches the app through worker/index.ts.
+// Its room types match the rooms below.
 export const bookingApp = {
   url: "https://concept-booking.concept-hotel-website.workers.dev",
+  repo: "https://github.com/NoTiX452/concept-booking-app",
+} as const;
+
+// The way into /book/, shown in the header, the phone menu and the footer.
+export const requestLink = { label: "Request a stay", href: "/book/" } as const;
+
+// The /book/ page. Every line must stay true: the request really reaches the
+// demo reception, nothing is charged, no email is sent, and the nightly reset
+// deletes it.
+export const requestStay = {
+  heading: "Request a *stay.*",
+  intro:
+    "Choose your dates and a room, and the request goes to reception, who confirm it. This is a concept: nothing is charged, no email is sent, and every request is cleared overnight.",
+  steps: {
+    when: { label: "When", title: "Your dates" },
+    room: { label: "Where", title: "Choose a room" },
+    who: { label: "Who", title: "Your details" },
+  },
+  stayHint: "Stays are 1 to 14 nights, up to a year ahead.",
+  // The demo reception has a public login, so anyone can read the requests.
+  privacy:
+    "Anyone can open the demo reception with its public login, so use a made-up name and an address such as name@example.com.",
+  priceHint: "Prices are sample figures in Romanian lei, for the whole stay.",
+  noScript: "Checking which rooms are free needs JavaScript. Turn it on to request a stay, or look through the rooms instead.",
+  done: {
+    label: "Request received",
+    text: "Reception now sees your request as pending. A real hotel would confirm it by email; this concept sends nothing, and the request is deleted at the nightly reset.",
+  },
 } as const;
 
 export type Room = {

@@ -6,9 +6,10 @@
   "description": "Concept project: the website of Zmeuriș Mountain House, a made-up hotel in the Apuseni Mountains",
   "scripts": {
     "dev": "astro dev",
+    "dev:worker": "npm run build && wrangler dev --port 8788",
     "build": "astro build && node scripts/check-build.mjs",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "astro check && tsc -p worker",
     "test": "node --test test/",
     "deploy": "npm run build && wrangler deploy",
     "astro": "astro"
@@ -21,6 +22,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261121.1",
     "wrangler": "^4.166.0"
   }
 }

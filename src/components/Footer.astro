@@ -1,5 +1,5 @@
 ---
-import { hotel, conceptNotice, nav } from "../content/hotel";
+import { hotel, conceptNotice, nav, requestLink } from "../content/hotel";
 import Ridge from "./Ridge.astro";
 ---
 
@@ -16,6 +16,7 @@ import Ridge from "./Ridge.astro";
               </li>
             ))
           }
+          <li><a href={requestLink.href}>{requestLink.label}</a></li>
           <li><a href="/credits/">About the photos</a></li>
           <li><a href={hotel.repo}>Source code on GitHub</a></li>
         </ul>

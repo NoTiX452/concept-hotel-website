@@ -3,7 +3,7 @@
 // - tone="dark": pine text, for light photos and cream pages (default);
 // - tone="light": cream text, for dark photos.
 // Once the page scrolls, the bar gets a cream background and pine text.
-import { hotel, nav, conceptNotice } from "../content/hotel";
+import { hotel, nav, conceptNotice, requestLink } from "../content/hotel";
 
 interface Props {
   tone?: "dark" | "light";
@@ -32,6 +32,11 @@ const isCurrent = (href: string) => current.startsWith(href);
             </li>
           ))
         }
+        <li>
+          <a class="request" href={requestLink.href} aria-current={isCurrent(requestLink.href) ? "page" : undefined}>
+            {requestLink.label}
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -70,6 +75,9 @@ const isCurrent = (href: string) => current.startsWith(href);
         ))
       }
     </ol>
+    <a class="button menu-request" href={requestLink.href} style={`--i: ${nav.length + 1}`}>
+      {requestLink.label} <span class="arrow" aria-hidden="true">→</span>
+    </a>
   </nav>
   <p class="menu-foot container">{conceptNotice.short} {hotel.region}.</p>
 </dialog>
@@ -190,6 +198,39 @@ const isCurrent = (href: string) => current.startsWith(href);
   }
 
   /* Current page: the raspberry dot. */
+  /* Request a stay: the one pill in the bar, set apart from the chapters. */
+  .nav .request {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .nav .request::after {
+    display: none;
+  }
+
+  .nav .request:hover,
+  .nav .request:focus-visible {
+    border-color: var(--raspberry);
+    background: var(--raspberry);
+    color: var(--cream);
+  }
+
+  .nav .request[aria-current="page"]::before {
+    display: none;
+  }
+
+  .nav .request[aria-current="page"] {
+    border-color: var(--raspberry);
+  }
+
   .nav a[aria-current="page"]::before {
     content: "";
     position: absolute;
@@ -347,7 +388,13 @@ const isCurrent = (href: string) => current.startsWith(href);
   .menu-nav {
     flex: 1;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .menu-request {
+    align-self: flex-start;
+    margin-bottom: var(--space-4);
   }
 
   .menu-nav ol {
@@ -402,7 +449,8 @@ const isCurrent = (href: string) => current.startsWith(href);
       animation: menu-in 600ms var(--ease-out) both;
     }
 
-    .menu[open] li {
+    .menu[open] li,
+    .menu[open] .menu-request {
       animation: link-in 800ms var(--ease-out) both;
       animation-delay: calc(150ms + var(--i) * 60ms);
     }

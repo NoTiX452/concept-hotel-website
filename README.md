@@ -1,20 +1,34 @@
 # Zmeuriș Mountain House: concept hotel website
 
 **This is a concept project.** Zmeuriș Mountain House is a made-up hotel in the
-Apuseni Mountains, Romania. The rooms, prices and menus are fiction, and nothing
-can be booked. The mountains are real. Designed and built by Nedelcu Valentin as
-a portfolio piece.
+Apuseni Mountains, Romania. The rooms, prices and menus are fiction, and a stay
+requested here is never a real booking. The mountains are real. Designed and
+built by Nedelcu Valentin as a portfolio piece.
 
 **Live demo:** https://concept-hotel.concept-hotel-website.workers.dev
 
-The booking web app for the same hotel is a separate concept:
-[concept-booking-app](https://github.com/NoTiX452/concept-booking-app).
+## Requesting a stay
+
+Guests request a stay on [`/book/`](https://concept-hotel.concept-hotel-website.workers.dev/book/):
+dates, then a room (with what is free and the sample price for the stay), then
+their details. Each room page links there with that room chosen
+(`/book/?room=meadow|forest|loft|family`).
+
+The request goes to the hotel's reception in a separate concept, the
+[booking app](https://github.com/NoTiX452/concept-booking-app), where it
+arrives as pending. The page calls this site's own `/api/*`; the Worker in
+`worker/index.ts` passes the three guest calls to the app over a Cloudflare
+service binding, so the browser never talks to another site and the app's
+staff API cannot be reached from here. Nothing is charged, no email is sent,
+and the app deletes every request at its nightly reset. The page asks for a
+made-up name and email, because the demo reception has a public login.
 
 ## Stack
 
 - Astro (static pages), TypeScript, plain CSS with design tokens
 - Fraunces and Instrument Sans, self-hosted (SIL Open Font License)
-- Hosted on Cloudflare Workers static assets (`wrangler.jsonc`)
+- Cloudflare Workers: static assets, plus a small Worker for `/api/*`
+  (`wrangler.jsonc`)
 
 ## Design
 
@@ -39,12 +53,19 @@ Astro drop the stylesheets; the build checks for this).
 
 ```
 npm install
-npm run dev       development server, port 4321
-npm run check     type check
-npm test          content rules
-npm run build     production build into dist/, then page checks
-npm run deploy    build and deploy to Cloudflare (needs `npx wrangler login` once)
+npm run dev         development server, port 4321 (pages only, no /api/)
+npm run dev:worker  build, then run the site with its Worker on port 8788
+npm run check       Astro and Worker type checks
+npm test            content rules and the Worker
+npm run build       production build into dist/, then page checks
+npm run deploy      build and deploy to Cloudflare (needs `npx wrangler login` once)
 ```
+
+To try `/book/` locally, run the booking app in a second terminal first
+(`npm run dev:worker` in `concept-booking-app`). `wrangler dev` connects the
+two by the app's Worker name and prints `env.BOOKING (concept-booking) …
+[connected]`. In production the booking app must be deployed on the same
+Cloudflare account.
 
 ## Photos
 
@@ -65,6 +86,8 @@ All copy is in `src/content/hotel.ts`. The tests in `test/` enforce:
 - room counts add up to the stated number of rooms;
 - every photo used has a slot, and any credit points at Unsplash or Pexels;
 - the concept notice says plainly that the hotel is not real;
+- each room is one room type in the booking app, and the request page says
+  the stay is not real and asks for made-up details;
 - no reviews, ratings, awards or star classifications, which would be fake.
 
 The build check (`scripts/check-build.mjs`) fails if any page lacks its

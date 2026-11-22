@@ -1,12 +1,23 @@
-// Cloudflare Workers with static assets: the Astro build is served as files,
-// with no Worker code. not_found_handling serves dist/404.html for unknown
-// addresses.
+// Cloudflare Workers with static assets. The Astro build is served as files;
+// not_found_handling serves dist/404.html for unknown addresses.
+// Option names checked against node_modules/wrangler/config-schema.json
+// (wrangler 4.166.0, read 2026-11-22).
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "concept-hotel",
+  "main": "./worker/index.ts",
   "compatibility_date": "2026-11-21",
+
+  // The Worker runs only for /api/*: the guest calls of the /book/ page.
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
     "not_found_handling": "404-page"
-  }
+  },
+
+  // The concept booking app's Worker, by name. It must be deployed on the
+  // same Cloudflare account. Locally, `wrangler dev` finds it when the app
+  // runs in another terminal (see README).
+  "services": [{ "binding": "BOOKING", "service": "concept-booking" }]
 }

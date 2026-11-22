@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { hotel, rooms, dining, area, gettingHere, conceptNotice } from "../src/content/hotel.ts";
+import { hotel, rooms, dining, area, gettingHere, conceptNotice, requestStay } from "../src/content/hotel.ts";
 import { photos } from "../src/content/photos.ts";
 
 test("room counts add up to the number of rooms the site states", () => {
@@ -40,7 +40,18 @@ test("credits, when filled in, point at Unsplash or Pexels", () => {
 test("the concept notice says plainly that the hotel is not real", () => {
   assert.match(conceptNotice.short, /not a real hotel/);
   assert.match(conceptNotice.long, /made-up/);
-  assert.match(conceptNotice.long, /nothing here can be booked/);
+  assert.match(conceptNotice.long, /never a real booking/);
+});
+
+test("each room is one room type in the booking app", () => {
+  const types = rooms.map((room) => room.bookingType);
+  assert.deepEqual([...types].sort(), ["family", "forest", "loft", "meadow"]);
+});
+
+test("the request page says the stay is not real, and where the details go", () => {
+  assert.match(requestStay.intro, /nothing is charged, no email is sent/);
+  assert.match(requestStay.privacy, /made-up name/);
+  assert.match(requestStay.done.text, /sends nothing/);
 });
 
 test("the copy invents no reviews, ratings, awards or stars", () => {

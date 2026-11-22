@@ -81,10 +81,12 @@ const pad = (n: number) => String(n).padStart(2, "0");
         </dl>
         <PriceNote />
         <p class="try">
-          <a href={`${bookingApp.url}/book/?room=${room.bookingType}`}>
-            Try the concept booking app <span aria-hidden="true">→</span>
+          <a class="button" href={`/book/?room=${room.bookingType}`}>
+            Request this room <span class="arrow" aria-hidden="true">→</span>
           </a>
-          <span class="try-note">See how a request for this room would reach reception. Nothing real is booked.</span>
+          <span class="try-note">
+            The request goes to the reception of the <a href={bookingApp.repo}>concept booking app</a>. Nothing real is booked.
+          </span>
         </p>
       </section>
     </div>
@@ -249,26 +251,32 @@ const pad = (n: number) => String(n).padStart(2, "0");
     background: var(--paper);
   }
 
-  /* The way into the concept booking app, kept below the price note so the
-     page still says first that nothing here is real. */
+  /* The way to /book/ with this room chosen, kept below the price note so
+     the page still says first that nothing here is real. */
   .try {
     display: grid;
-    gap: 0.25rem;
+    gap: var(--space-2);
     margin: var(--space-3) 0 0;
     padding-top: var(--space-3);
     border-top: 1px solid var(--rule);
   }
 
-  .try a {
+  .try .button {
     justify-self: start;
-    padding-block: calc((2.75rem - 1lh) / 2);
-    color: var(--accent);
-    font-weight: 600;
   }
 
   .try-note {
     color: var(--fg-soft);
     font-size: var(--text-sm);
+  }
+
+  /* An inline link: the padding gives it a 44 px target, the negative margin
+     keeps the line spacing as it was. */
+  .try-note a {
+    display: inline-block;
+    padding-block: calc((2.75rem - 1lh) / 2);
+    margin-block: calc((2.75rem - 1lh) / -2);
+    color: var(--fg);
   }
 
   dl {
