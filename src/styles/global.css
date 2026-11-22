@@ -397,6 +397,13 @@ a:hover {
   transition-delay: var(--delay, 0ms);
 }
 
+/* Blocks that carry photos (the places rail, the contact sheet) fade up in
+   one second, like the photo reveals; text keeps its slightly longer rise. */
+.js [data-reveal="up"]:has(img),
+.js [data-reveal=""]:has(img) {
+  transition-duration: 1000ms;
+}
+
 /* Fade only. */
 .js [data-reveal="fade"] {
   opacity: 0;
@@ -407,9 +414,11 @@ a:hover {
 /* Image mask: the frame opens upward, the photo settles inside it.
  * The clip goes on the inner layer: a clip on the observed element itself
  * would make IntersectionObserver see nothing, and it would never reveal. */
+/* Both halves of the photo reveal take one second (shortened from 1.4 s and
+   1.8 s at the owner's request, 2026-11-22). */
 .js [data-reveal="mask"] > .photo-inner {
   clip-path: inset(100% 0 0 0);
-  transition: clip-path 1400ms var(--ease-in-out);
+  transition: clip-path 1000ms var(--ease-in-out);
   transition-delay: var(--delay, 0ms);
 }
 
@@ -419,7 +428,7 @@ a:hover {
 
 .js [data-reveal="mask"] img {
   transform: scale(1.18);
-  transition: transform 1800ms var(--ease-out);
+  transition: transform 1000ms var(--ease-out);
   transition-delay: var(--delay, 0ms);
 }
 

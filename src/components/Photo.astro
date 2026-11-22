@@ -45,6 +45,12 @@ const {
   focus,
 } = Astro.props;
 const photo = resolvePhoto(name);
+// Encoder quality for every photo (Astro accepts a preset or 0-100).
+// Measured 2026-11-22 on this site's photos (all AVIF files together):
+// default = "mid" = 50: 6.4 MB · 40: 4.0 MB · 35: 3.2 MB · "low": 2.0 MB.
+// "low" visibly smears grass and wood grain at full size; 35 is close to 50;
+// 40 keeps a margin. Re-measure if the photos change.
+const QUALITY = 40;
 
 if (!photo.ready && import.meta.env.PROD) {
   throw new Error(
@@ -78,6 +84,7 @@ const style = [
         <Picture
           src={image}
           formats={["avif", "webp"]}
+          quality={QUALITY}
           widths={usableWidths}
           sizes={sizes}
           alt={photo.slot.alt}
