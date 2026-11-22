@@ -36,8 +36,17 @@ export const nav = [
   { label: "Getting here", href: "/getting-here/" },
 ] as const;
 
+// The concept booking app (NoTiX452/concept-booking-app), a separate project
+// for the same made-up hotel. Its room types match the rooms below.
+// Check this address after the app is deployed.
+export const bookingApp = {
+  url: "https://concept-booking.concept-hotel-website.workers.dev",
+} as const;
+
 export type Room = {
   slug: string;
+  // The room type in the booking app.
+  bookingType: "meadow" | "forest" | "loft" | "family";
   name: string;
   photo: PhotoName;
   count: number;
@@ -55,6 +64,7 @@ export type Room = {
 export const rooms: Room[] = [
   {
     slug: "meadow-room",
+    bookingType: "meadow",
     name: "Meadow Room",
     photo: "room-meadow",
     count: 5,
@@ -72,6 +82,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "forest-room",
+    bookingType: "forest",
     name: "Forest Room",
     photo: "room-forest",
     count: 4,
@@ -89,6 +100,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "loft-suite",
+    bookingType: "loft",
     name: "Loft Suite",
     photo: "room-loft",
     count: 2,
@@ -106,6 +118,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "family-room",
+    bookingType: "family",
     name: "Family Room",
     photo: "room-family",
     count: 1,

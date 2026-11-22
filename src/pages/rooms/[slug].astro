@@ -6,7 +6,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Photo from "../../components/Photo.astro";
 import Split from "../../components/Split.astro";
 import PriceNote from "../../components/PriceNote.astro";
-import { rooms } from "../../content/hotel";
+import { bookingApp, rooms } from "../../content/hotel";
 
 export const getStaticPaths = (() =>
   rooms.map((room, index) => ({
@@ -80,6 +80,12 @@ const pad = (n: number) => String(n).padStart(2, "0");
           }
         </dl>
         <PriceNote />
+        <p class="try">
+          <a href={`${bookingApp.url}/book/?room=${room.bookingType}`}>
+            Try the concept booking app <span aria-hidden="true">→</span>
+          </a>
+          <span class="try-note">See how a request for this room would reach reception. Nothing real is booked.</span>
+        </p>
       </section>
     </div>
   </article>
@@ -241,6 +247,28 @@ const pad = (n: number) => String(n).padStart(2, "0");
     margin-top: var(--space-8);
     padding: var(--space-4);
     background: var(--paper);
+  }
+
+  /* The way into the concept booking app, kept below the price note so the
+     page still says first that nothing here is real. */
+  .try {
+    display: grid;
+    gap: 0.25rem;
+    margin: var(--space-3) 0 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  .try a {
+    justify-self: start;
+    padding-block: calc((2.75rem - 1lh) / 2);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .try-note {
+    color: var(--fg-soft);
+    font-size: var(--text-sm);
   }
 
   dl {
