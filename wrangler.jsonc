@@ -1,7 +1,5 @@
 // Cloudflare Workers with static assets. The Astro build is served as files;
 // not_found_handling serves dist/404.html for unknown addresses.
-// Option names checked against node_modules/wrangler/config-schema.json
-// (wrangler 4.166.0, read 2026-11-22).
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "concept-hotel",
