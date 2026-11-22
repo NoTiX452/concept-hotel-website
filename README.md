@@ -5,8 +5,10 @@ Apuseni Mountains, Romania. The rooms, prices and menus are fiction, and nothing
 can be booked. The mountains are real. Designed and built by Nedelcu Valentin as
 a portfolio piece.
 
+**Live demo:** https://concept-hotel.concept-hotel-website.workers.dev
+
 The booking web app for the same hotel is a separate concept:
-`concept-booking-app`.
+[concept-booking-app](https://github.com/NoTiX452/concept-booking-app).
 
 ## Stack
 
@@ -18,8 +20,7 @@ The booking web app for the same hotel is a separate concept:
 
 The house stands where the meadow meets the forest, and the site is built on
 that edge: light cream "meadow" sections give way to forest green and pine as
-you scroll. The quality bar for this and future projects is in
-[DESIGN_STANDARD.md](DESIGN_STANDARD.md).
+you scroll.
 
 - Tokens: `src/styles/tokens.css` (palette with calculated WCAG contrast).
 - Motion uses no library. Scroll reveals are in `src/scripts/reveal.ts`,

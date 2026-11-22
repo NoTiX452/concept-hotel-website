@@ -1,6 +1,6 @@
 # Response headers for Cloudflare Workers static assets.
-# Syntax and override behaviour: https://developers.cloudflare.com/workers/static-assets/headers/
-# (read 2026-11-22). Rules here replace Cloudflare's default
+# Syntax: https://developers.cloudflare.com/workers/static-assets/headers/
+# Rules here replace Cloudflare's default
 # "Cache-Control: public, max-age=0, must-revalidate".
 
 # Astro puts a content hash in every file name under /_astro/ (images, CSS,

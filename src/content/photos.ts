@@ -2,7 +2,7 @@
 // after the slot (for example hero.jpg) and alt text.
 //
 // Photos are free-licence stock (Unsplash or Pexels). They show other places,
-// not this made-up hotel; the photos page and the case study say so. A credit
+// not this made-up hotel; the photos page says so. A credit
 // is optional; when given, the photos page lists it.
 //
 // While a file or alt text is missing, `npm run dev` shows a labelled "photo

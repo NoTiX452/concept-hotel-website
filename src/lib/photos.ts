@@ -17,8 +17,8 @@ export type ResolvedPhoto =
   // Not ready; `image` is set when only the alt text is missing.
   | { ready: false; image?: ImageMetadata; slot: PhotoSlot; missing: string[] };
 
-// A photo is ready with a file and alt text. Credits are optional (owner's
-// decision, 2026-11-21): the photos page says where the photos come from.
+// A photo is ready with a file and alt text. Credits are optional: the photos
+// page says where the photos come from.
 export function resolvePhoto(name: PhotoName): ResolvedPhoto {
   const slot: PhotoSlot = photos[name];
   const image = byName.get(name);

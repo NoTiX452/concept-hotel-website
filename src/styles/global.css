@@ -414,8 +414,6 @@ a:hover {
 /* Image mask: the frame opens upward, the photo settles inside it.
  * The clip goes on the inner layer: a clip on the observed element itself
  * would make IntersectionObserver see nothing, and it would never reveal. */
-/* Both halves of the photo reveal take one second (shortened from 1.4 s and
-   1.8 s at the owner's request, 2026-11-22). */
 .js [data-reveal="mask"] > .photo-inner {
   clip-path: inset(100% 0 0 0);
   transition: clip-path 1000ms var(--ease-in-out);
